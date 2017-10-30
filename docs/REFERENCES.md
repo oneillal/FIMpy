@@ -1,3 +1,6 @@
+# References
+
+https://github.com/os/slacker
 
 https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started
 
