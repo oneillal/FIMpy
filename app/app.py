@@ -198,7 +198,7 @@ def scanFiles():
         return jsonify([])
 
 def alert_slack():
-    slack = Slacker('xoxp-263593032944-263593033264-264354253602-625b13068268ff830591033ddbdb83b4')
+    slack = Slacker('<slack-token-here>')
 
     # Send a message to #general channel
     slack.chat.post_message('#general', 'Possible file compromise', 'FIMpy', 'false', '', '', '[{"color":"#36a64f","title":"FIMpy Alert","title_link":"https://api.slack.com/","text":"File: /test/10kfile","fields":[{"title":"HMAC","value":"High"}]}]', '', '', '', ':face-monkey:', '')
