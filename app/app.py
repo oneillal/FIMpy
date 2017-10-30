@@ -37,7 +37,8 @@ CONFIG = {
     'password': 'password',
 # Array of paths to be monitored e.g. 'paths': ['/path1', '/path2/path3']
 #   'paths': ['/bin', '/usr/bin/python2.7']
-    'paths': ['test']
+    'paths': ['test'],
+    'slack_token': os.getenv('SLACKTOKEN', 'xoxp-9999999999')
 }
 #######################################################################
 
@@ -103,6 +104,7 @@ def getFileInfo():
             print(document['file'])
             print('hash db> ' + document['hash'])
             print('hmac db> ' + document['hmac'])
+# TODO return proper json payload
         return jsonify(list(map(lambda doc: doc['file'], db)))
     else:
         print('No database')
@@ -146,6 +148,7 @@ def writeFileData():
                             'hash': sha256.hexdigest(),
                             'hmac': digest.hexdigest()}
                     db.create_document(data)
+# TODO return proper json payload
     return 'Records added to db'
 
 # /* Endpoint to get the monitored files from the database.
@@ -191,15 +194,14 @@ def scanFiles():
                 print "data does not match"
                 # alert_slack()
         alert_slack()
-
+# TODO return proper json payload
         return jsonify(list(map(lambda doc: doc['file'], db)))
     else:
         print('No database')
         return jsonify([])
 
 def alert_slack():
-    slack = Slacker('<slack-token-here>')
-
+    slack = Slacker(CONFIG['slack_token'])
     # Send a message to #general channel
     slack.chat.post_message('#general', 'Possible file compromise', 'FIMpy', 'false', '', '', '[{"color":"#36a64f","title":"FIMpy Alert","title_link":"https://api.slack.com/","text":"File: /test/10kfile","fields":[{"title":"HMAC","value":"High"}]}]', '', '', '', ':face-monkey:', '')
 
