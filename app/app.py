@@ -24,6 +24,8 @@ import glob
 import hashlib
 import hmac
 
+from slacker import Slacker
+
 #######################################################################
 CONFIG = {
 # On Bluemix, get the port number from the environment variable PORT
@@ -175,6 +177,7 @@ def scanFiles():
                         sha256.update(block)  # update the hash for the next file block
                 finally:
                     f.close()
+
             print(document['file'])
             print('hash db> ' + document['hash'])
             print('hash fs> ' + sha256.hexdigest())
@@ -183,14 +186,22 @@ def scanFiles():
 
             if digest.hexdigest() == document['hmac']:
                 print "match"
+                # alert_slack()
             else:
                 print "data does not match"
+                # alert_slack()
+        alert_slack()
 
         return jsonify(list(map(lambda doc: doc['file'], db)))
     else:
         print('No database')
         return jsonify([])
 
+def alert_slack():
+    slack = Slacker('xoxp-263593032944-263593033264-264407967445-856bb3a22f062fb9b0dc531dc11607b4')
+
+    # Send a message to #general channel
+    slack.chat.post_message('#general', 'Possible file compromise', 'FIMpy', 'false', '', '', '[{"color":"#36a64f","title":"FIMpy Alert","title_link":"https://api.slack.com/","text":"File: /test/10kfile","fields":[{"title":"HMAC","value":"High"}]}]', '', '', '', ':face-monkey:', '')
 
 @atexit.register
 def shutdown():
