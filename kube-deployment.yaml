@@ -1,0 +1,20 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: pyfim-app
+  labels:
+    app: pyfim-app
+spec:
+  selector:
+    matchLabels:
+      app: pyfim-app
+  template:
+    metadata:
+      labels:
+        app: pyfim-app
+    spec:
+      containers:
+      - name: pyfim-app
+        image: alanoneill/pyfim
+        ports:
+        - containerPort: 5000

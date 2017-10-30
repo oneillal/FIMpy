@@ -1,0 +1,9 @@
+{
+  "root": "./docs",
+  "plugins": ["expandable-chapters", "anchors", "splitter"],
+  "pluginsConfig": {
+    "lunr": {
+      "maxIndexSize": 1000000
+    }
+  }
+}
