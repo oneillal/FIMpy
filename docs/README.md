@@ -1,2 +1,2 @@
-# ![](assets/face-monkey.png) FIMpy - File Integrity Monitor
+# ![](assets/face-monkey.png) FIMpy - A Python File Integrity Monitoring App
 
