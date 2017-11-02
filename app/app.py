@@ -17,7 +17,6 @@ from flask import Flask, render_template, request, jsonify
 import atexit
 import cf_deployment_tracker
 import json
-import socket
 import os
 import glob
 
@@ -25,6 +24,9 @@ import hashlib
 import hmac
 
 from slacker import Slacker
+
+import socket
+from OpenSSL import SSL
 
 #######################################################################
 CONFIG = {
@@ -62,7 +64,7 @@ if 'VCAP_SERVICES' in os.environ:
         password = creds['password']
         url = 'https://' + creds['host']
         client = Cloudant(user, password, url=url, connect=True)
-        client.delete_database(CONFIG['db_name']) # delete existing db for dev
+#       client.delete_database(CONFIG['db_name'])  # delete existing db for dev
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 elif os.path.isfile('vcap-local.json'):
     with open('vcap-local.json') as f:
@@ -73,15 +75,10 @@ elif os.path.isfile('vcap-local.json'):
         password = creds['password']
         url = 'https://' + creds['host']
         client = Cloudant(user, password, url=url, connect=True)
-        client.delete_database(CONFIG['db_name']) # delete existing db for dev
+#       client.delete_database(CONFIG['db_name'])  # delete existing db for dev
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 
-        # Get all of the documents from my_database
-        for document in db:
-            # Look for all documents which do not match _design/
-            if not pattern.match(document['_id']):
-                print (document['_id'])
-                document.delete()
+
 
 @app.route('/')
 def home():
@@ -98,7 +95,7 @@ def home():
 # * }
 # */
 @app.route('/api/fimpy', methods=['GET'])
-def getFileInfo():
+def getfileinfo():
     if client:
         for document in db:
             print(document['file'])
@@ -189,11 +186,10 @@ def scanFiles():
 
             if digest.hexdigest() == document['hmac']:
                 print "match"
-                # alert_slack()
             else:
                 print "data does not match"
-                # alert_slack()
-        alert_slack()
+                alert_slack()
+
 # TODO return proper json payload
         return jsonify(list(map(lambda doc: doc['file'], db)))
     else:
@@ -203,7 +199,7 @@ def scanFiles():
 def alert_slack():
     slack = Slacker(CONFIG['slack_token'])
     # Send a message to #general channel
-    slack.chat.post_message('#general', 'Possible file compromise', 'FIMpy', 'false', '', '', '[{"color":"#36a64f","title":"FIMpy Alert","title_link":"https://api.slack.com/","text":"File: /test/10kfile","fields":[{"title":"HMAC","value":"High"}]}]', '', '', '', ':face-monkey:', '')
+    slack.chat.post_message('#general', 'Possible file compromise', 'FIMpy', 'false', '', '', '[{"color":"#FF0000","title":"FIMpy Alert","title_link":"https://api.slack.com/","text":"File: /test/10kfile","fields":[{"title":"HMAC","value":"High"}]}]', '', '', '', ':face-monkey:', '')
 
 @atexit.register
 def shutdown():
@@ -211,4 +207,7 @@ def shutdown():
         client.disconnect()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=CONFIG['port'], debug=True)
+    context = ('cert', 'key')
+    app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, debug=True)
+#   app.run(host='0.0.0.0', port=CONFIG['port'], debug=True)
+
