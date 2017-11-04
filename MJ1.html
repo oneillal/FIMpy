@@ -187,14 +187,74 @@
                                 
                                 <h1 id="monthly-journal-1"><a name="monthly-journal-1" class="plugin-anchor" href="#monthly-journal-1"><i class="fa fa-link" aria-hidden="true"></i></a>Monthly Journal 1</h1>
 <h2 id="the-idea"><a name="the-idea" class="plugin-anchor" href="#the-idea"><i class="fa fa-link" aria-hidden="true"></i></a>The Idea</h2>
-<p>After toying with a few initial ideas, I talked to our in house security team because I wanted to a real world security related problem for my project. After a quick chat, a good idea came about. A file integrity monitoring solution, or FIM. I had to do a little research. Turns out, there are many tools already that do something similar. Tripwire, Aide, Samhain to name a few. Almost all built in C derivatives for obvious performance reasons. My descire was to write an application which addresses the specific uses cases and requirements and develop with a modern programing language and using existing PAAS, libraries and services where possible.</p>
+<p>After toying with a few initial ideas, I talked to our in house security team because I wanted to a real world security related problem for my project. After a quick chat, a good idea came about. A file integrity monitoring solution, or FIM. I had to do a little research. Turns out, there are many tools already that do something similar. Tripwire, Aide, Samhain to name a few. Almost all qre built in C derivatives for obvious performance reasons. My plan is to write an application which addresses the specific uses cases and requirements and develop with a modern programing language and using existing PAAS, libraries and services as much as possible.</p>
 <h2 id="rwe"><a name="rwe" class="plugin-anchor" href="#rwe"><i class="fa fa-link" aria-hidden="true"></i></a>RWE</h2>
+<p>The treat of ransom-ware is very much to the forefront of Watson Platform for Health security concerns. Patient Health Information (PHI) is highly valued by cyber criminals and our in-house Ops and Security team are engaged in a continuous cycle of security evaluation and improvement. The threat of malware inside the firewall is almost of grave concern and the potential for PHI loss if very real. We recognised the need for an IDS solution that can detect malware and Trojans and also detect and prevent a ransom-ware attack e.g. CryptoLocker[1] which typically involves encryption of victim&apos;s files.</p>
 <h2 id="getting-started"><a name="getting-started" class="plugin-anchor" href="#getting-started"><i class="fa fa-link" aria-hidden="true"></i></a>Getting Started</h2>
+<p>Trying to get started has been difficult due to work commitments.</p>
+<p><img src="assets/orig-design.png" alt=""></p>
 <h2 id="design--requirements"><a name="design--requirements" class="plugin-anchor" href="#design--requirements"><i class="fa fa-link" aria-hidden="true"></i></a>Design &amp; Requirements</h2>
+<p>My design centres on a client-server architecture using a master and slave approach. Any number of Slaves can be deployed on a server to monitor files and send back integrity information to the master which Compares integrity information with that stored in a secure database to ensure the integrity of monitored files.</p>
 <h2 id="python"><a name="python" class="plugin-anchor" href="#python"><i class="fa fa-link" aria-hidden="true"></i></a>Python</h2>
+<p>I have decided to use Python to develop my solution due to the flexibility of the language and the speed at which results can be achieved. Python also offers a huge array of community supported libraries and functions that I hope to be able to take advantage of. Python also has numerous web frameworks. I am going to utilise the Flask framework for my application using a micro-services approach. Flask is also supported by Bluemix which is where I plan to host my Python application. I have very little practical experience with Python.</p>
 <h2 id="bluemix"><a name="bluemix" class="plugin-anchor" href="#bluemix"><i class="fa fa-link" aria-hidden="true"></i></a>Bluemix</h2>
+<p>Bluemix is a great platform for learning new technologies. It supports Flask web frameworks and has a number of different data storage solutions. I chose Cloudant because I want to get more hands on with NOSQL and I already have a lot of experience with DB2.</p>
 <h2 id="containers"><a name="containers" class="plugin-anchor" href="#containers"><i class="fa fa-link" aria-hidden="true"></i></a>Containers</h2>
-<h2 id="kube"><a name="kube" class="plugin-anchor" href="#kube"><i class="fa fa-link" aria-hidden="true"></i></a>Kube</h2>
+<p>Spent most of the time this week trying to containerise the application. I&apos;m heavily invested in DevOps in my day job so I&apos;ve played a bit Docker and regularly attend meetups. Before the app can be deploy on the Watson platform, it will need to run in a container. Time spent getting everything working could probably have been spent on other features but once I start on something, I can&apos;t leave it alone.</p>
+<p><code>docker build -t alanoneill/pyfim:latest .</code></p>
+<pre><code class="lang-docker"><span class="hljs-keyword">FROM</span> ubuntu:latest
+<span class="hljs-keyword">MAINTAINER</span> <span class="hljs-string">&quot;alan.oneill75@gmail.com&quot;</span>
+RUN apt-get update -y
+<span class="hljs-keyword">RUN</span> <span class="bash">apt-get install -y python-pip python-dev build-essential
+</span><span class="hljs-keyword">COPY</span> <span class="bash">. /app
+</span><span class="hljs-keyword">WORKDIR</span> <span class="bash">/app
+</span><span class="hljs-keyword">RUN</span> <span class="bash">pip install -r requirements.txt
+</span><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">5000</span>
+<span class="hljs-keyword">ENV</span> SLACKTOKEN=xoxp-<span class="hljs-number">263593032944</span>-<span class="hljs-number">263593033264</span>-<span class="hljs-number">263845823617</span>-<span class="hljs-number">77037</span>eade80a620aded289030641096d
+<span class="hljs-comment">#ENTRYPOINT [&quot;python&quot;]</span>
+<span class="hljs-comment">#CMD [&quot;app.py&quot;]</span>
+<span class="hljs-keyword">CMD</span> <span class="bash">[<span class="hljs-string">&quot;python&quot;</span>,<span class="hljs-string">&quot;-u&quot;</span>,<span class="hljs-string">&quot;app.py&quot;</span>]
+</span></code></pre>
+<h2 id="kubernetes"><a name="kubernetes" class="plugin-anchor" href="#kubernetes"><i class="fa fa-link" aria-hidden="true"></i></a>Kubernetes</h2>
+<p>I&apos;ve become obsessed with Kubernetes lately. I first became aware of it watching a Google Dev conference on YouTube a couple of years ago. It&apos;s really is amazing technology. Bluemix (soon to be known as IBM Cloud) offers a free one node cluster so of course I had to spend time getting the app deployed as a Kube service. In order to get the deployment to work on a Bluemix cluster, I needed to publish my image to <a href="https://hub.docker.com/r/alanoneill/pyfim/" target="_blank">dockerhub</a>.</p>
+<pre><code class="lang-yaml"><span class="hljs-attr">apiVersion:</span> apps/v1beta1
+<span class="hljs-attr">kind:</span> Deployment
+<span class="hljs-attr">metadata:</span>
+<span class="hljs-attr">  name:</span> pyfim-app
+<span class="hljs-attr">  labels:</span>
+<span class="hljs-attr">    app:</span> pyfim-app
+<span class="hljs-attr">spec:</span>
+<span class="hljs-attr">  selector:</span>
+<span class="hljs-attr">    matchLabels:</span>
+<span class="hljs-attr">      app:</span> pyfim-app
+<span class="hljs-attr">  template:</span>
+<span class="hljs-attr">    metadata:</span>
+<span class="hljs-attr">      labels:</span>
+<span class="hljs-attr">        app:</span> pyfim-app
+<span class="hljs-attr">    spec:</span>
+<span class="hljs-attr">      containers:</span>
+<span class="hljs-attr">      - name:</span> pyfim-app
+<span class="hljs-attr">        image:</span> alanoneill/pyfim
+<span class="hljs-attr">        ports:</span>
+<span class="hljs-attr">        - containerPort:</span> <span class="hljs-number">5000</span>
+</code></pre>
+<pre><code class="lang-yaml"><span class="hljs-attr">apiVersion:</span> v1
+<span class="hljs-attr">kind:</span> Service
+<span class="hljs-attr">metadata:</span>
+<span class="hljs-attr">  name:</span> pyfim-service
+<span class="hljs-attr">  labels:</span>
+<span class="hljs-attr">    name:</span> pyfim-app
+<span class="hljs-attr">spec:</span>
+<span class="hljs-attr">  type:</span> NodePort
+<span class="hljs-attr">  ports:</span>
+<span class="hljs-attr">    - port:</span> <span class="hljs-number">5000</span>
+<span class="hljs-attr">      targetPort:</span> <span class="hljs-number">5000</span>
+<span class="hljs-attr">      protocol:</span> TCP
+<span class="hljs-attr">      name:</span> pyfim-service
+<span class="hljs-attr">  selector:</span>
+<span class="hljs-attr">    app:</span> pyfim-app
+</code></pre>
+<p>[1] <a href="https://en.wikipedia.org/wiki/CryptoLocker" target="_blank">https://en.wikipedia.org/wiki/CryptoLocker</a></p>
 
                                 
                                 </section>
@@ -238,7 +298,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Monthly Journal","level":"1.2","depth":1,"next":{"title":"References","level":"1.3","depth":1,"path":"REFERENCES.md","ref":"REFERENCES.md","articles":[]},"previous":{"title":"FIMpy - File Integrity Monitor","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"MJ1.md","mtime":"2017-11-02T19:26:07.387Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-11-02T22:53:15.636Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Monthly Journal","level":"1.2","depth":1,"next":{"title":"References","level":"1.3","depth":1,"path":"REFERENCES.md","ref":"REFERENCES.md","articles":[]},"previous":{"title":"FIMpy - File Integrity Monitor","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"MJ1.md","mtime":"2017-11-04T21:54:48.631Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-11-04T22:00:59.645Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
