@@ -76,6 +76,7 @@ elif os.path.isfile('vcap-local.json'):
         url = 'https://' + creds['host']
         client = Cloudant(user, password, url=url, connect=True)
 #       client.delete_database(CONFIG['db_name'])  # delete existing db for dev
+        print CONFIG['db_name']
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 
 
