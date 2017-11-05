@@ -67,7 +67,7 @@ CMD ["python","-u","app.py"]
 
 ### Kubernetes
 
-I've become obsessed with Kubernetes lately. I first became aware of it watching a Google Dev conference on YouTube a couple of years ago. It really is amazing technology. Bluemix (soon to be known as IBM Cloud) offers a free one node cluster so of course I had to spend time getting the app deployed as a Kube service. In order to get the deployment to work on a Bluemix cluster, I needed to publish my image to [dockerhub](https://hub.docker.com/r/alanoneill/pyfim/).
+I've become obsessed with Kubernetes lately. I first became aware of it watching a Google Dev conference on YouTube a couple of years ago. It really is amazing technology. Bluemix (soon to be known as IBM Cloud) offers a free one node cluster so of course I had to spend time getting the app deployed as a Kube service. In order to get the deployment to work on a Bluemix cluster, I needed to publish my image to [dockerhub](https://hub.docker.com/r/alanoneill/fimpy/).
 
 ```yaml
 apiVersion: apps/v1beta1
