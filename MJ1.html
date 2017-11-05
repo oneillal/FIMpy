@@ -464,11 +464,11 @@
 <p>Bluemix is a great platform for learning new technologies. It supports Flask web frameworks and has a number of different data storage solutions. I chose Cloudant because I want to get more hands on with NoSQL and I already have a lot of experience with DB2.</p>
 <h3 id="containers"><a name="containers" class="plugin-anchor" href="#containers"><i class="fa fa-link" aria-hidden="true"></i></a>Containers</h3>
 <p>Spent most of the time this week trying to containerise the application. I&apos;m heavily invested in DevOps in my day job so I&apos;ve played a bit Docker and regularly attend meetups. Before the app can be deploy on the Watson platform, it will need to run in a container. Time spent getting everything working could probably have been spent on other features but once I start on something, I can&apos;t leave it alone.</p>
-<p><code>docker build -t alanoneill/pyfim:latest .</code></p>
-<pre><code class="lang-docker"><span class="hljs-keyword">FROM</span> ubuntu:latest
+<p><code>$ docker build -t alanoneill/fimpy:latest .</code></p>
+<pre><code class="lang-docker"><span class="hljs-keyword">FROM</span> ubuntu:zesty
 <span class="hljs-keyword">MAINTAINER</span> <span class="hljs-string">&quot;alan.oneill75@gmail.com&quot;</span>
 RUN apt-get update -y
-<span class="hljs-keyword">RUN</span> <span class="bash">apt-get install -y python-pip python-dev build-essential
+<span class="hljs-keyword">RUN</span> <span class="bash">apt-get install -y python-pip python-dev build-essential libldap2-dev libsasl2-dev libssl-dev
 </span><span class="hljs-keyword">COPY</span> <span class="bash">. /app
 </span><span class="hljs-keyword">WORKDIR</span> <span class="bash">/app
 </span><span class="hljs-keyword">RUN</span> <span class="bash">pip install -r requirements.txt
@@ -523,7 +523,7 @@ RUN apt-get update -y
 Records added to db
 </code></pre>
 <h4 id="get-apifimpy---read-monitored-file-info-from-db"><a name="get-apifimpy---read-monitored-file-info-from-db" class="plugin-anchor" href="#get-apifimpy---read-monitored-file-info-from-db"><i class="fa fa-link" aria-hidden="true"></i></a>GET /api/fimpy - Read monitored file info from db</h4>
-<pre><code class="lang-bash">$ curl -k -u admin:lo11ipop --url https://173.193.85.141:31342/api/fimpy
+<pre><code class="lang-bash">$ curl -k -u admin:password --url https://127.0.0.1:5000/api/fimpy
 [
   <span class="hljs-string">&quot;/app/test/11kfile&quot;</span>,
   <span class="hljs-string">&quot;/app/test/sniff.py&quot;</span>,
@@ -532,10 +532,10 @@ Records added to db
 ]
 </code></pre>
 <h4 id="ldap-authenication-failure"><a name="ldap-authenication-failure" class="plugin-anchor" href="#ldap-authenication-failure"><i class="fa fa-link" aria-hidden="true"></i></a>LDAP Authenication Failure</h4>
-<pre><code class="lang-bash">$ curl -v -k -u admin:badpw --url https://173.193.85.141:31342/api/fimpy/scan
-*   Trying 173.193.85.141...
+<pre><code class="lang-bash">$ curl -v -k -u admin:badpw --url https://127.0.0.1:5000/api/fimpy/scan
+*   Trying 127.0.0.1...
 * TCP_NODELAY <span class="hljs-built_in">set</span>
-* Connected to 173.193.85.141 (173.193.85.141) port 31342 (<span class="hljs-comment">#0)</span>
+* Connected to 127.0.0.1 (127.0.0.1) port 5000 (<span class="hljs-comment">#0)</span>
 * ALPN, offering http/1.1
 * Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
 * successfully <span class="hljs-built_in">set</span> certificate verify locations:
@@ -562,7 +562,7 @@ Records added to db
 *  SSL certificate verify result: self signed certificate (18), continuing anyway.
 * Server auth using Basic with user <span class="hljs-string">&apos;admin&apos;</span>
 &gt; GET /api/fimpy/scan HTTP/1.1
-&gt; Host: 173.193.85.141:31342
+&gt; Host: 127.0.0.1:5000
 &gt; Authorization: Basic YWRtaW46YmFkcHc=
 &gt; User-Agent: curl/7.52.1
 &gt; Accept: */*
@@ -625,7 +625,7 @@ Authenticaton failed
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Monthly Journal","level":"1.2","depth":1,"next":{"title":"The Idea","level":"1.2.1","depth":2,"anchor":"#the-idea","path":"MJ1.md","ref":"MJ1.md#the-idea","articles":[]},"previous":{"title":"FIMpy - File Integrity Monitor","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"MJ1.md","mtime":"2017-11-05T21:20:32.092Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-11-05T22:50:59.506Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Monthly Journal","level":"1.2","depth":1,"next":{"title":"The Idea","level":"1.2.1","depth":2,"anchor":"#the-idea","path":"MJ1.md","ref":"MJ1.md#the-idea","articles":[]},"previous":{"title":"FIMpy - File Integrity Monitor","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"MJ1.md","mtime":"2017-11-05T22:58:40.432Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-11-05T23:00:31.377Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
