@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>References · GitBook</title>
+        <title>Kubernetes Reference · GitBook</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -69,8 +69,10 @@
     <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
 
     
+    <link rel="next" href="GITBOOK.html" />
     
-    <link rel="prev" href="GITBOOK.html" />
+    
+    <link rel="prev" href="DOCKER.html" />
     
 
     </head>
@@ -358,7 +360,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.5" data-path="KUBE.html">
+        <li class="chapter active" data-level="1.5" data-path="KUBE.html">
             
                 <a href="KUBE.html">
             
@@ -384,7 +386,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.7" data-path="REFERENCES.html">
+        <li class="chapter " data-level="1.7" data-path="REFERENCES.html">
             
                 <a href="REFERENCES.html">
             
@@ -427,7 +429,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href="." >References</a>
+        <a href="." >Kubernetes Reference</a>
     </h1>
 </div>
 
@@ -442,26 +444,46 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="references"><a name="references" class="plugin-anchor" href="#references"><i class="fa fa-link" aria-hidden="true"></i></a>References</h1>
-<h3 id="python-slack-wrapper"><a name="python-slack-wrapper" class="plugin-anchor" href="#python-slack-wrapper"><i class="fa fa-link" aria-hidden="true"></i></a>Python Slack Wrapper</h3>
-<p><a href="https://github.com/os/slacker" target="_blank">https://github.com/os/slacker</a></p>
-<h3 id="bluemix-getting-started-guide"><a name="bluemix-getting-started-guide" class="plugin-anchor" href="#bluemix-getting-started-guide"><i class="fa fa-link" aria-hidden="true"></i></a>Bluemix Getting Started Guide</h3>
-<p><a href="https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started" target="_blank">https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started</a></p>
-<h3 id="docker-user-guide"><a name="docker-user-guide" class="plugin-anchor" href="#docker-user-guide"><i class="fa fa-link" aria-hidden="true"></i></a>Docker User Guide</h3>
-<p><a href="https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/" target="_blank">https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/</a></p>
-<h3 id="dockerhub---publishing"><a name="dockerhub---publishing" class="plugin-anchor" href="#dockerhub---publishing"><i class="fa fa-link" aria-hidden="true"></i></a>DockerHub - Publishing</h3>
-<p><a href="https://ropenscilabs.github.io/r-docker-tutorial/04-Dockerhub.html" target="_blank">https://ropenscilabs.github.io/r-docker-tutorial/04-Dockerhub.html</a></p>
-<h3 id="python-flask-ssl"><a name="python-flask-ssl" class="plugin-anchor" href="#python-flask-ssl"><i class="fa fa-link" aria-hidden="true"></i></a>Python Flask SSL</h3>
-<p><a href="http://flask.pocoo.org/snippets/111/" target="_blank">http://flask.pocoo.org/snippets/111/</a></p>
-<h3 id="python-ldap"><a name="python-ldap" class="plugin-anchor" href="#python-ldap"><i class="fa fa-link" aria-hidden="true"></i></a>Python LDAP</h3>
-<p><a href="https://www.packtpub.com/books/content/python-ldap-applications-part-1-installing-and-configuring-python-ldap-library-and-bin" target="_blank">https://www.packtpub.com/books/content/python-ldap-applications-part-1-installing-and-configuring-python-ldap-library-and-bin</a></p>
-<h3 id="python-flask-basic-auth-sample-code"><a name="python-flask-basic-auth-sample-code" class="plugin-anchor" href="#python-flask-basic-auth-sample-code"><i class="fa fa-link" aria-hidden="true"></i></a>Python Flask Basic Auth Sample Code</h3>
-<p><a href="http://flask.pocoo.org/snippets/8/" target="_blank">http://flask.pocoo.org/snippets/8/</a></p>
-<h3 id="ldap-as-a-service"><a name="ldap-as-a-service" class="plugin-anchor" href="#ldap-as-a-service"><i class="fa fa-link" aria-hidden="true"></i></a>LDAP-as-a-Service</h3>
-<p><a href="https://jumpcloud.com/daas-product/ldap-as-a-service" target="_blank">https://jumpcloud.com/daas-product/ldap-as-a-service</a></p>
-<h3 id="fimpy-logo"><a name="fimpy-logo" class="plugin-anchor" href="#fimpy-logo"><i class="fa fa-link" aria-hidden="true"></i></a>FIMpy Logo</h3>
-<p><a href="https://www.easyicon.net/language.en/541685-face_monkey_icon.html" target="_blank">https://www.easyicon.net/language.en/541685-face_monkey_icon.html</a>
-(Free for commerical use)</p>
+                                <h1 id="kubernetes-reference"><a name="kubernetes-reference" class="plugin-anchor" href="#kubernetes-reference"><i class="fa fa-link" aria-hidden="true"></i></a>Kubernetes Reference</h1>
+<h3 id="create-service"><a name="create-service" class="plugin-anchor" href="#create-service"><i class="fa fa-link" aria-hidden="true"></i></a>Create Service</h3>
+<pre><code class="lang-bash">~/dev/project/FIMpy(master*) &#xBB; kubectl create <span class="hljs-_">-f</span> kube-service.yaml
+service <span class="hljs-string">&quot;fimpy-service&quot;</span> created
+</code></pre>
+<h3 id="create-deployment"><a name="create-deployment" class="plugin-anchor" href="#create-deployment"><i class="fa fa-link" aria-hidden="true"></i></a>Create Deployment</h3>
+<pre><code class="lang-bash">~/dev/project/FIMpy(master*) &#xBB; kubectl create <span class="hljs-_">-f</span> kube-deployment.yaml
+deployment <span class="hljs-string">&quot;fimpy-app&quot;</span> created
+</code></pre>
+<h3 id="get-service"><a name="get-service" class="plugin-anchor" href="#get-service"><i class="fa fa-link" aria-hidden="true"></i></a>Get Service</h3>
+<pre><code class="lang-bash">~/dev/project/FIMpy(master*) &#xBB; kubectl get service -o wide                                                                                                                                                                                                         oneillal@xubuntu
+NAME            TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE       SELECTOR
+fimpy-service   NodePort    172.21.13.63   &lt;none&gt;        5000:31342/TCP   2m        app=fimpy-app
+kubernetes      ClusterIP   172.21.0.1     &lt;none&gt;        443/TCP          10d       &lt;none&gt;
+</code></pre>
+<h3 id="get-pod"><a name="get-pod" class="plugin-anchor" href="#get-pod"><i class="fa fa-link" aria-hidden="true"></i></a>Get Pod</h3>
+<pre><code class="lang-bash">~/dev/project/FIMpy(master*) &#xBB; kubectl get pods -o wide
+NAME                         READY     STATUS    RESTARTS   AGE       IP              NODE
+fimpy-app-3774997280-glctd   1/1       Running   0          2m        172.30.91.215   10.76.164.243
+</code></pre>
+<h3 id="logs"><a name="logs" class="plugin-anchor" href="#logs"><i class="fa fa-link" aria-hidden="true"></i></a>Logs</h3>
+<pre><code class="lang-bash">~/dev/project/FIMpy(master*) &#xBB; kubectl logs <span class="hljs-_">-f</span> fimpy-app-3774997280-glctd
+Found <span class="hljs-built_in">local</span> VCAP_SERVICES
+fimpy-app-3774997280-glctd
+ * Running on https://0.0.0.0:5000/ (Press CTRL+C to quit)
+ * Restarting with <span class="hljs-built_in">stat</span>
+ * Debugger is active!
+ * Debugger PIN: 184-335-951
+</code></pre>
+<h3 id="deployment-shell-access"><a name="deployment-shell-access" class="plugin-anchor" href="#deployment-shell-access"><i class="fa fa-link" aria-hidden="true"></i></a>Deployment Shell Access</h3>
+<pre><code class="lang-bash">~/dev/project/FIMpy(master*) &#xBB; kubectl <span class="hljs-built_in">exec</span> -i -t fimpy-app-3774997280-glctd bash
+
+root@fimpy-app-3774997280-glctd:/app<span class="hljs-comment"># ps -ef</span>
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 18:36 ?        00:00:00 /pause
+root         5     0  0 18:36 ?        00:00:00 python -u main.py
+root        15     5  1 18:36 ?        00:00:15 /usr/bin/python main.py
+root        23     0  0 19:00 pts/0    00:00:00 bash
+root        32    23  0 19:00 pts/0    00:00:00 ps -ef
+</code></pre>
 
                                 
                                 </section>
@@ -489,10 +511,14 @@
 
             
                 
-                <a href="GITBOOK.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: GitBook">
+                <a href="DOCKER.html" class="navigation navigation-prev " aria-label="Previous page: Docker Reference">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
+                
+                <a href="GITBOOK.html" class="navigation navigation-next " aria-label="Next page: GitBook">
+                    <i class="fa fa-angle-right"></i>
+                </a>
                 
             
         
@@ -501,7 +527,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"References","level":"1.7","depth":1,"previous":{"title":"GitBook","level":"1.6","depth":1,"path":"GITBOOK.md","ref":"GITBOOK.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"REFERENCES.md","mtime":"2017-11-05T16:25:59.172Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-11-05T22:03:05.532Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Kubernetes Reference","level":"1.5","depth":1,"next":{"title":"GitBook","level":"1.6","depth":1,"path":"GITBOOK.md","ref":"GITBOOK.md","articles":[]},"previous":{"title":"Docker Reference","level":"1.4","depth":1,"path":"DOCKER.md","ref":"DOCKER.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"KUBE.md","mtime":"2017-11-05T19:06:58.435Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-11-05T22:03:05.532Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>

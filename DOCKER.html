@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>References · GitBook</title>
+        <title>Docker Reference · GitBook</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -69,8 +69,10 @@
     <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
 
     
+    <link rel="next" href="KUBE.html" />
     
-    <link rel="prev" href="GITBOOK.html" />
+    
+    <link rel="prev" href="JUMPCLOUD.html" />
     
 
     </head>
@@ -345,7 +347,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4" data-path="DOCKER.html">
+        <li class="chapter active" data-level="1.4" data-path="DOCKER.html">
             
                 <a href="DOCKER.html">
             
@@ -384,7 +386,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.7" data-path="REFERENCES.html">
+        <li class="chapter " data-level="1.7" data-path="REFERENCES.html">
             
                 <a href="REFERENCES.html">
             
@@ -427,7 +429,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href="." >References</a>
+        <a href="." >Docker Reference</a>
     </h1>
 </div>
 
@@ -442,26 +444,60 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h1 id="references"><a name="references" class="plugin-anchor" href="#references"><i class="fa fa-link" aria-hidden="true"></i></a>References</h1>
-<h3 id="python-slack-wrapper"><a name="python-slack-wrapper" class="plugin-anchor" href="#python-slack-wrapper"><i class="fa fa-link" aria-hidden="true"></i></a>Python Slack Wrapper</h3>
-<p><a href="https://github.com/os/slacker" target="_blank">https://github.com/os/slacker</a></p>
-<h3 id="bluemix-getting-started-guide"><a name="bluemix-getting-started-guide" class="plugin-anchor" href="#bluemix-getting-started-guide"><i class="fa fa-link" aria-hidden="true"></i></a>Bluemix Getting Started Guide</h3>
-<p><a href="https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started" target="_blank">https://console.bluemix.net/docs/cli/reference/bluemix_cli/get_started.html#getting-started</a></p>
-<h3 id="docker-user-guide"><a name="docker-user-guide" class="plugin-anchor" href="#docker-user-guide"><i class="fa fa-link" aria-hidden="true"></i></a>Docker User Guide</h3>
-<p><a href="https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/" target="_blank">https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/</a></p>
-<h3 id="dockerhub---publishing"><a name="dockerhub---publishing" class="plugin-anchor" href="#dockerhub---publishing"><i class="fa fa-link" aria-hidden="true"></i></a>DockerHub - Publishing</h3>
-<p><a href="https://ropenscilabs.github.io/r-docker-tutorial/04-Dockerhub.html" target="_blank">https://ropenscilabs.github.io/r-docker-tutorial/04-Dockerhub.html</a></p>
-<h3 id="python-flask-ssl"><a name="python-flask-ssl" class="plugin-anchor" href="#python-flask-ssl"><i class="fa fa-link" aria-hidden="true"></i></a>Python Flask SSL</h3>
-<p><a href="http://flask.pocoo.org/snippets/111/" target="_blank">http://flask.pocoo.org/snippets/111/</a></p>
-<h3 id="python-ldap"><a name="python-ldap" class="plugin-anchor" href="#python-ldap"><i class="fa fa-link" aria-hidden="true"></i></a>Python LDAP</h3>
-<p><a href="https://www.packtpub.com/books/content/python-ldap-applications-part-1-installing-and-configuring-python-ldap-library-and-bin" target="_blank">https://www.packtpub.com/books/content/python-ldap-applications-part-1-installing-and-configuring-python-ldap-library-and-bin</a></p>
-<h3 id="python-flask-basic-auth-sample-code"><a name="python-flask-basic-auth-sample-code" class="plugin-anchor" href="#python-flask-basic-auth-sample-code"><i class="fa fa-link" aria-hidden="true"></i></a>Python Flask Basic Auth Sample Code</h3>
-<p><a href="http://flask.pocoo.org/snippets/8/" target="_blank">http://flask.pocoo.org/snippets/8/</a></p>
-<h3 id="ldap-as-a-service"><a name="ldap-as-a-service" class="plugin-anchor" href="#ldap-as-a-service"><i class="fa fa-link" aria-hidden="true"></i></a>LDAP-as-a-Service</h3>
-<p><a href="https://jumpcloud.com/daas-product/ldap-as-a-service" target="_blank">https://jumpcloud.com/daas-product/ldap-as-a-service</a></p>
-<h3 id="fimpy-logo"><a name="fimpy-logo" class="plugin-anchor" href="#fimpy-logo"><i class="fa fa-link" aria-hidden="true"></i></a>FIMpy Logo</h3>
-<p><a href="https://www.easyicon.net/language.en/541685-face_monkey_icon.html" target="_blank">https://www.easyicon.net/language.en/541685-face_monkey_icon.html</a>
-(Free for commerical use)</p>
+                                <h1 id="docker-reference"><a name="docker-reference" class="plugin-anchor" href="#docker-reference"><i class="fa fa-link" aria-hidden="true"></i></a>Docker Reference</h1>
+<h3 id="building-the-fimpy-image"><a name="building-the-fimpy-image" class="plugin-anchor" href="#building-the-fimpy-image"><i class="fa fa-link" aria-hidden="true"></i></a>Building the FIMpy Image</h3>
+<pre><code class="lang-bash">~/dev/project/FIMpy/app(master*) &#xBB; docker build -t alanoneill/fimpy:latest .
+Sending build context to Docker daemon  71.17kB
+Step 1/10 : FROM ubuntu:zesty
+ ---&gt; 5e9fde03a0de
+Step 2/10 : MAINTAINER <span class="hljs-string">&quot;alan.oneill75@gmail.com&quot;</span>
+ ---&gt; Using cache
+ ---&gt; 5914a7f13422
+Step 3/10 : RUN apt-get update -y
+ ---&gt; Using cache
+ ---&gt; e5f757b323dc
+Step 4/10 : RUN apt-get install -y python-pip python-dev build-essential libldap2-dev libsasl2-dev libssl-dev
+ ---&gt; Using cache
+ ---&gt; 814066000105
+Step 5/10 : COPY . /app
+ ---&gt; Using cache
+ ---&gt; 56cdbebdee06
+Step 6/10 : WORKDIR /app
+ ---&gt; Using cache
+ ---&gt; 8ff32a4630b2
+Step 7/10 : RUN pip install -r requirements.txt
+ ---&gt; Using cache
+ ---&gt; 0c9d470d64cf
+Step 8/10 : EXPOSE 5000
+ ---&gt; Using cache
+ ---&gt; 725ca2626d92
+Step 9/10 : ENV SLACKTOKEN
+ ---&gt; Using cache
+ ---&gt; 0e559213ef1e
+Step 10/10 : CMD python -u main.py
+ ---&gt; Using cache
+ ---&gt; a052e2fe335b
+Successfully built a052e2fe335b
+Successfully tagged alanoneill/fimpy:latest
+</code></pre>
+<h3 id="starting-a-fimpy-container"><a name="starting-a-fimpy-container" class="plugin-anchor" href="#starting-a-fimpy-container"><i class="fa fa-link" aria-hidden="true"></i></a>Starting a FIMpy Container</h3>
+<pre><code class="lang-bash">~/dev/project/FIMpy/app(master*) &#xBB; docker run <span class="hljs-_">-d</span> -p 5000:5000 --name fimpy alanoneill/fimpy
+21a02c2de547b0957f1ac1a9ac0cc69b983ed8b29fa4f1a5a2b2a0c0ca368158
+</code></pre>
+<h3 id="push-to-dockerhub"><a name="push-to-dockerhub" class="plugin-anchor" href="#push-to-dockerhub"><i class="fa fa-link" aria-hidden="true"></i></a>Push to DockerHub</h3>
+<pre><code class="lang-bash">~/dev/project/FIMpy/app(master*) &#xBB; docker push alanoneill/fimpy
+The push refers to a repository [docker.io/alanoneill/fimpy]
+0bd94378fefa: Mounted from alanoneill/pyfim
+5ac2b699e6<span class="hljs-built_in">fc</span>: Mounted from alanoneill/pyfim
+043f86434fa3: Mounted from alanoneill/pyfim
+930be9908569: Mounted from alanoneill/pyfim
+a5bfda07c31b: Mounted from alanoneill/pyfim
+4cb653496843: Mounted from alanoneill/pyfim
+69da000be6ed: Mounted from alanoneill/pyfim
+3eaf555ee1db: Mounted from alanoneill/pyfim
+71b5d87d106c: Mounted from alanoneill/pyfim
+latest: digest: sha256:abde77d42f93270b12836181baae8615298229bc4a9aa2359997b70a0451bd06 size: 2203
+</code></pre>
 
                                 
                                 </section>
@@ -489,10 +525,14 @@
 
             
                 
-                <a href="GITBOOK.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: GitBook">
+                <a href="JUMPCLOUD.html" class="navigation navigation-prev " aria-label="Previous page: JumpCloud - LDAP-as-a-Service">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
+                
+                <a href="KUBE.html" class="navigation navigation-next " aria-label="Next page: Kubernetes Reference">
+                    <i class="fa fa-angle-right"></i>
+                </a>
                 
             
         
@@ -501,7 +541,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"References","level":"1.7","depth":1,"previous":{"title":"GitBook","level":"1.6","depth":1,"path":"GITBOOK.md","ref":"GITBOOK.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"REFERENCES.md","mtime":"2017-11-05T16:25:59.172Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-11-05T22:03:05.532Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Docker Reference","level":"1.4","depth":1,"next":{"title":"Kubernetes Reference","level":"1.5","depth":1,"path":"KUBE.md","ref":"KUBE.md","articles":[]},"previous":{"title":"JumpCloud - LDAP-as-a-Service","level":"1.3","depth":1,"path":"JUMPCLOUD.md","ref":"JUMPCLOUD.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"DOCKER.md","mtime":"2017-11-05T18:32:51.708Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-11-05T22:03:05.532Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
