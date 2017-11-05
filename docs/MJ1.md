@@ -47,13 +47,13 @@ Bluemix is a great platform for learning new technologies. It supports Flask web
 
 Spent most of the time this week trying to containerise the application. I'm heavily invested in DevOps in my day job so I've played a bit Docker and regularly attend meetups. Before the app can be deploy on the Watson platform, it will need to run in a container. Time spent getting everything working could probably have been spent on other features but once I start on something, I can't leave it alone.
 
-`docker build -t alanoneill/pyfim:latest . `
+`$ docker build -t alanoneill/fimpy:latest . `
 
 ```docker
-FROM ubuntu:latest
+FROM ubuntu:zesty
 MAINTAINER "alan.oneill75@gmail.com"
 RUN apt-get update -y
-RUN apt-get install -y python-pip python-dev build-essential
+RUN apt-get install -y python-pip python-dev build-essential libldap2-dev libsasl2-dev libssl-dev
 COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
@@ -121,7 +121,7 @@ Records added to db
 
 #### GET /api/fimpy - Read monitored file info from db
 ```bash
-$ curl -k -u admin:lo11ipop --url https://173.193.85.141:31342/api/fimpy
+$ curl -k -u admin:password --url https://127.0.0.1:5000/api/fimpy
 [
   "/app/test/11kfile",
   "/app/test/sniff.py",
@@ -132,10 +132,10 @@ $ curl -k -u admin:lo11ipop --url https://173.193.85.141:31342/api/fimpy
 
 #### LDAP Authenication Failure
 ```bash
-$ curl -v -k -u admin:badpw --url https://173.193.85.141:31342/api/fimpy/scan
-*   Trying 173.193.85.141...
+$ curl -v -k -u admin:badpw --url https://127.0.0.1:5000/api/fimpy/scan
+*   Trying 127.0.0.1...
 * TCP_NODELAY set
-* Connected to 173.193.85.141 (173.193.85.141) port 31342 (#0)
+* Connected to 127.0.0.1 (127.0.0.1) port 5000 (#0)
 * ALPN, offering http/1.1
 * Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
 * successfully set certificate verify locations:
@@ -162,7 +162,7 @@ $ curl -v -k -u admin:badpw --url https://173.193.85.141:31342/api/fimpy/scan
 *  SSL certificate verify result: self signed certificate (18), continuing anyway.
 * Server auth using Basic with user 'admin'
 > GET /api/fimpy/scan HTTP/1.1
-> Host: 173.193.85.141:31342
+> Host: 127.0.0.1:5000
 > Authorization: Basic YWRtaW46YmFkcHc=
 > User-Agent: curl/7.52.1
 > Accept: */*
