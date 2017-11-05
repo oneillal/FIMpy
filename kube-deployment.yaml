@@ -18,6 +18,6 @@ spec:
         image: alanoneill/fimpy
         env:
         - name: SLACKTOKEN
-          value: "<SLACK-TOKEN>"
+          value: "<MY-SLACK-TOKEN>"
         ports:
         - containerPort: 5000
