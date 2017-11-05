@@ -1,12 +1,12 @@
-FROM ubuntu:latest
+FROM ubuntu:zesty
 MAINTAINER "alan.oneill75@gmail.com"
 RUN apt-get update -y
-RUN apt-get install -y python-pip python-dev build-essential
+RUN apt-get install -y python-pip python-dev build-essential libldap2-dev libsasl2-dev libssl-dev
 COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
 EXPOSE 5000
 ENV SLACKTOKEN=
 #ENTRYPOINT ["python"]
-#CMD ["app.py"]
-CMD ["python","-u","app.py"]
+#CMD ["main.py"]
+CMD ["python","-u","main.py"]

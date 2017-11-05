@@ -3,6 +3,7 @@
 FIMpy - A Python File Integrity Monitoring Application
 
 """
+
 __author__ = "Alan O'Neill"
 __license__ = "GPL"
 __version__ = "1.0"
@@ -13,6 +14,7 @@ from cloudant.client import Cloudant
 from cloudant.error import CloudantException
 from cloudant.result import Result, ResultByKey
 
+from functools import wraps
 from flask import Flask, render_template, request, jsonify
 import atexit
 import cf_deployment_tracker
@@ -22,6 +24,8 @@ import glob
 
 import hashlib
 import hmac
+
+import auth
 
 from slacker import Slacker
 
@@ -82,6 +86,7 @@ elif os.path.isfile('vcap-local.json'):
 
 
 @app.route('/')
+@auth.protected
 def home():
     return render_template('index.html')
 
@@ -96,6 +101,7 @@ def home():
 # * }
 # */
 @app.route('/api/fimpy', methods=['GET'])
+@auth.protected
 def getfileinfo():
     if client:
         for document in db:
@@ -115,6 +121,7 @@ def getfileinfo():
 #  * @return An message string
 #  */
 @app.route('/api/fimpy', methods=['POST'])
+@auth.protected
 def writeFileData():
     for path in CONFIG['paths']:
 #TODO add path based monitoring rules
@@ -160,6 +167,7 @@ def writeFileData():
 # * }
 # */
 @app.route('/api/fimpy/scan', methods=['GET'])
+@auth.protected
 def scanFiles():
     if client:
         for document in db:
@@ -210,5 +218,3 @@ def shutdown():
 if __name__ == '__main__':
     context = ('cert', 'key')
     app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, debug=True)
-#   app.run(host='0.0.0.0', port=CONFIG['port'], debug=True)
-

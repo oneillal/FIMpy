@@ -1,9 +1,12 @@
 {
   "root": "./docs",
-  "plugins": ["expandable-chapters", "anchors", "splitter"],
+  "plugins": ["expandable-chapters", "anchors", "splitter", "github"],
   "pluginsConfig": {
     "lunr": {
       "maxIndexSize": 1000000
+    },
+    "github": {
+        "url": "https://github.com/oneillal/FIMpy"
     }
   }
 }

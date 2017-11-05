@@ -1,20 +1,23 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: pyfim-app
+  name: fimpy-app
   labels:
-    app: pyfim-app
+    app: fimpy-app
 spec:
   selector:
     matchLabels:
-      app: pyfim-app
+      app: fimpy-app
   template:
     metadata:
       labels:
-        app: pyfim-app
+        app: fimpy-app
     spec:
       containers:
-      - name: pyfim-app
-        image: alanoneill/pyfim
+      - name: fimpy-app
+        image: alanoneill/fimpy
+        env:
+        - name: SLACKTOKEN
+          value: "<SLACK-TOKEN>"
         ports:
         - containerPort: 5000
