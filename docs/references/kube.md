@@ -1,8 +1,8 @@
 # Kubernetes Reference
 
-![](assets/fimpy-cluster.png)
+![](../assets/fimpy-cluster.png)
 
-![](assets/fimpy-nodes.png)
+![](../assets/fimpy-nodes.png)
 
 ### Create Service
 

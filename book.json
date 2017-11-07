@@ -1,12 +1,15 @@
 {
   "root": "./docs",
-  "plugins": ["expandable-chapters", "anchors", "splitter", "github"],
+  "plugins": ["expandable-chapters", "anchors", "splitter", "github", "codeblock-label", "richquotes"],
   "pluginsConfig": {
     "lunr": {
       "maxIndexSize": 1000000
     },
     "github": {
         "url": "https://github.com/oneillal/FIMpy"
+    },
+    "richquotes": {
+      "default": false
     }
   }
 }
