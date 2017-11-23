@@ -4,3 +4,4 @@ cloudant==2.4.0
 slacker==0.9.60
 pyopenssl
 python-ldap==2.4.28
+apscheduler

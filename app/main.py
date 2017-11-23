@@ -10,27 +10,25 @@ __version__ = "1.0"
 __maintainer__ = "Alan O'Neill"
 __status__ = "Development"
 
-from cloudant.client import Cloudant
-from cloudant.error import CloudantException
-from cloudant.result import Result, ResultByKey
+# local imports
+from auth import protected
+from func import scanfiles
 
-from functools import wraps
-from flask import Flask, render_template, request, jsonify
+from cloudant.client import Cloudant
+from cloudant.query import Query
+
+from flask import Flask, render_template, request, abort
+
+from apscheduler.schedulers.background import BackgroundScheduler
+
 import atexit
 import cf_deployment_tracker
 import json
 import os
 import glob
-
+import socket
 import hashlib
 import hmac
-
-import auth
-
-from slacker import Slacker
-
-import socket
-from OpenSSL import SSL
 
 #######################################################################
 CONFIG = {
@@ -41,10 +39,17 @@ CONFIG = {
     'db_name': socket.getfqdn(),
     'user': 'user',
     'password': 'password',
+    'slack_token': os.getenv('SLACKTOKEN', 'xoxp-9999999999')
+}
+
+SETTINGS = {
+    'scanner_interval': 1
+}
+
+PATHS = {
 # Array of paths to be monitored e.g. 'paths': ['/path1', '/path2/path3']
 #   'paths': ['/bin', '/usr/bin/python2.7']
-    'paths': ['test'],
-    'slack_token': os.getenv('SLACKTOKEN', 'xoxp-9999999999')
+    'paths': ['test', 'static']
 }
 #######################################################################
 
@@ -84,11 +89,74 @@ elif os.path.isfile('vcap-local.json'):
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 
 
+#######################################################################################
+#######################################################################################
+#######################################################################################
 
 @app.route('/')
-@auth.protected
+@protected
 def home():
     return render_template('index.html')
+
+# /*
+#  * Endpoint to get a JSON array of all the monitored files in the database
+#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Response:
+#  * @return An message string
+#  */
+@app.route('/api/fimpy/test', methods=['GET'])
+@protected
+def test():
+    print ""
+    return json.dumps({}), 200, {'Content-Type': 'application/json; charset=utf-8'}
+
+# /*
+#  * Endpoint to get a JSON array of all the monitored files in the database
+#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Response:
+#  * @return An message string
+#  */
+@app.route('/api/fimpy/config', methods=['GET'])
+@protected
+def getconfig():
+    if client:
+        return json.dumps(CONFIG, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
+    else:
+        print('No database')
+        return json.dumps([]), 500, {'Content-Type': 'application/json; charset=utf-8'}
+
+# /*
+#  * Endpoint to get a JSON array of all the monitored files in the database
+#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Response:
+#  * @return An message string
+#  */
+@app.route('/api/fimpy/config/path', methods=['GET'])
+@protected
+def getpath():
+    if client:
+        return json.dumps(PATHS, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
+    else:
+        print('No database')
+        return json.dumps(PATHS, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
+
+
+# /*
+#  * Endpoint to get a JSON array of all the monitored files in the database
+#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Response:
+#  * @return An message string
+#  */
+@app.route('/api/fimpy/config/path', methods=['POST'])
+@protected
+def setpath():
+    if not request.json:
+        abort(400)
+    if client:
+        return json.dumps(PATHS, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
+    else:
+        print('No database')
+        return json.dumps(PATHS, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
 # /* Endpoint to get the monitored files from the database.
 #  * Endpoint to get a JSON array of all the monitored files in the database
@@ -101,18 +169,36 @@ def home():
 # * }
 # */
 @app.route('/api/fimpy', methods=['GET'])
-@auth.protected
+@protected
 def getfileinfo():
     if client:
-        for document in db:
+        items = []
+
+        # retrieve docs of type proof
+        query = Query(db, selector={'type': {'$eq': 'proof'}})
+
+        for document in query.result:
+            item = {"file": document['file']}
+            item["host"] = document['host']
+            item["ipaddress"] = document['ipaddress']
+            item["size"] = document['size']
+            item["createdate"] = document['createdate']
+            item["modifydate"] = document['modifydate']
+            item["hash"] = document['hash']
+            item["hmac"] = document['hmac']
+            items.append(item)
+
             print(document['file'])
             print('hash db> ' + document['hash'])
             print('hmac db> ' + document['hmac'])
-# TODO return proper json payload
-        return jsonify(list(map(lambda doc: doc['file'], db)))
+
+        array = {"file": items}
+        root = {"files": array}
+
+        return json.dumps(root, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
     else:
         print('No database')
-        return jsonify([])
+        return json.dumps([]), 500, {'Content-Type': 'application/json; charset=utf-8'}
 
 # /*
 #  * Endpoint to get a JSON array of all the monitored files in the database
@@ -121,9 +207,12 @@ def getfileinfo():
 #  * @return An message string
 #  */
 @app.route('/api/fimpy', methods=['POST'])
-@auth.protected
-def writeFileData():
-    for path in CONFIG['paths']:
+@protected
+def writefiledata():
+    if not request.json:
+        abort(400)
+    items = []
+    for path in PATHS['paths']:
 #TODO add path based monitoring rules
         for file in glob.glob(os.path.join(path, '*')):
             if os.path.isfile(file):
@@ -149,12 +238,21 @@ def writeFileData():
                     data = {'host': socket.getfqdn(),
                             'ipaddress': socket.gethostbyname(socket.gethostname()),
                             'file': os.path.realpath(file),
-                            'createdate': os.path.getmtime(file),
+                            'size': os.path.getsize(file),
+                            'createdate': os.path.getctime(file),
+                            'modifydate': os.path.getmtime(file),
                             'hash': sha256.hexdigest(),
-                            'hmac': digest.hexdigest()}
+                            'hmac': digest.hexdigest(),
+                            'type': 'proof'}
                     db.create_document(data)
+                    items.append(data)
+
+    array = {"file": items}
+    root = {"files": array}
+
 # TODO return proper json payload
-    return 'Records added to db'
+    print 'Records added to db'
+    return json.dumps(root, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
 # /* Endpoint to get the monitored files from the database.
 #  * Endpoint to get a JSON array of all the monitored files in the database
@@ -166,55 +264,33 @@ def writeFileData():
 # *     "file": "/path/file"
 # * }
 # */
-@app.route('/api/fimpy/scan', methods=['GET'])
-@auth.protected
-def scanFiles():
+
+@app.route('/api/fimpy/scan', methods=['POST'])
+@protected
+def scan():
     if client:
-        for document in db:
-            sha256 = hashlib.sha256()
-            digest = hmac.new('secret-shared-key-goes-here', '', hashlib.sha256)
-            file = document['file']
-            if os.path.isfile(file):
-                f = open(file, 'rb')
-                # TODO add exception handling
-                try:
-                    while True:
-                        block = f.read(BUF_SIZE)
-                        if not block:
-                            break
-                        digest.update(block)  # update the hmac for the next file block
-                        sha256.update(block)  # update the hash for the next file block
-                finally:
-                    f.close()
-
-            print(document['file'])
-            print('hash db> ' + document['hash'])
-            print('hash fs> ' + sha256.hexdigest())
-            print('hmac db> ' + document['hmac'])
-            print('hmac fs> ' + digest.hexdigest())
-
-            if digest.hexdigest() == document['hmac']:
-                print "match"
-            else:
-                print "data does not match"
-                alert_slack()
+        scanner()
 
 # TODO return proper json payload
-        return jsonify(list(map(lambda doc: doc['file'], db)))
+        return "", 200
     else:
         print('No database')
-        return jsonify([])
+        return "", 500
 
-def alert_slack():
-    slack = Slacker(CONFIG['slack_token'])
-    # Send a message to #general channel
-    slack.chat.post_message('#general', 'Possible file compromise', 'FIMpy', 'false', '', '', '[{"color":"#FF0000","title":"FIMpy Alert","title_link":"https://api.slack.com/","text":"File: /test/10kfile","fields":[{"title":"HMAC","value":"High"}]}]', '', '', '', ':face-monkey:', '')
+def scanner():
+    scanfiles(db, BUF_SIZE)
+
 
 @atexit.register
 def shutdown():
     if client:
         client.disconnect()
+        cron.shutdown(wait=False)
 
 if __name__ == '__main__':
     context = ('cert', 'key')
-    app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, debug=True)
+    # Kick-off background thread to scan files
+    cron = BackgroundScheduler(daemon=True)
+    cron.start()
+    cron.add_job(scanner, 'interval', minutes=SETTINGS['scanner_interval'])
+    app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, use_reloader=False, debug=True)

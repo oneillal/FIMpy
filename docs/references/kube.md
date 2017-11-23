@@ -4,6 +4,12 @@
 
 ![](../assets/fimpy-nodes.png)
 
+### Configure Local kubectl Client
+
+```bash
+export KUBECONFIG=/home/oneillal/.bluemix/plugins/container-service/clusters/pyfim/kube-config-hou02-pyfim.yml
+```
+
 ### Create Service
 
 ```bash

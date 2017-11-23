@@ -54,7 +54,7 @@
                     data.forEach(function(element, index) {
                       data[index] = AntiXSS.sanitizeInput(element)
                     });
-                    $('#monitoredFiles').html("Monitored files: " + JSON.stringify(data));
+                    $('#monitoredFiles').html("Monitored files: " + data);
                   }
               });
           }

@@ -18,6 +18,6 @@ spec:
         image: alanoneill/fimpy
         env:
         - name: SLACKTOKEN
-          value: "xoxp-263593032944-263593033264-263845823617-77037eade80a620aded289030641096d"
+          value: "xoxp-263593032944-263593033264-269519073923-d49237434619d65ecbeb11bd5e44bcd8"
         ports:
         - containerPort: 5000
