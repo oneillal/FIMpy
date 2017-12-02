@@ -50,14 +50,14 @@ Successfully tagged alanoneill/fimpy:latest
 ```bash
 ~/dev/project/FIMpy/app(master*) » docker push alanoneill/fimpy
 The push refers to a repository [docker.io/alanoneill/fimpy]
-0bd94378fefa: Mounted from alanoneill/pyfim
-5ac2b699e6fc: Mounted from alanoneill/pyfim
-043f86434fa3: Mounted from alanoneill/pyfim
-930be9908569: Mounted from alanoneill/pyfim
-a5bfda07c31b: Mounted from alanoneill/pyfim
-4cb653496843: Mounted from alanoneill/pyfim
-69da000be6ed: Mounted from alanoneill/pyfim
-3eaf555ee1db: Mounted from alanoneill/pyfim
-71b5d87d106c: Mounted from alanoneill/pyfim
+0bd94378fefa: Mounted from alanoneill/fimpy
+5ac2b699e6fc: Mounted from alanoneill/fimpy
+043f86434fa3: Mounted from alanoneill/fimpy
+930be9908569: Mounted from alanoneill/fimpy
+a5bfda07c31b: Mounted from alanoneill/fimpy
+4cb653496843: Mounted from alanoneill/fimpy
+69da000be6ed: Mounted from alanoneill/fimpy
+3eaf555ee1db: Mounted from alanoneill/fimpy
+71b5d87d106c: Mounted from alanoneill/fimpy
 latest: digest: sha256:abde77d42f93270b12836181baae8615298229bc4a9aa2359997b70a0451bd06 size: 2203
 ```

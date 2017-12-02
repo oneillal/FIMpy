@@ -11,21 +11,21 @@ Here's the deployment yaml.
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: pyfim-app
+  name: fimpy-app
   labels:
-    app: pyfim-app
+    app: fimpy-app
 spec:
   selector:
     matchLabels:
-      app: pyfim-app
+      app: fimpy-app
   template:
     metadata:
       labels:
-        app: pyfim-app
+        app: fimpy-app
     spec:
       containers:
-      - name: pyfim-app
-        image: alanoneill/pyfim
+      - name: fimpy-app
+        image: alanoneill/fimpy
         ports:
         - containerPort: 5000
 ```
@@ -35,16 +35,16 @@ And the service yaml.
 apiVersion: v1
 kind: Service
 metadata:
-  name: pyfim-service
+  name: fimpy-service
   labels:
-    name: pyfim-app
+    name: fimpy-app
 spec:
   type: NodePort
   ports:
     - port: 5000
       targetPort: 5000
       protocol: TCP
-      name: pyfim-service
+      name: fimpy-service
   selector:
-    app: pyfim-app
+    app: fimpy-app
 ```

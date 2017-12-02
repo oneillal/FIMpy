@@ -2,7 +2,7 @@
 
 import hashlib
 import hmac
-import os
+from os import path
 
 from alert import alert_slack
 
@@ -11,7 +11,7 @@ def scanfiles(db, BUF_SIZE):
         sha256 = hashlib.sha256()
         digest = hmac.new('secret-shared-key-goes-here', '', hashlib.sha256)
         file = document['file']
-        if os.path.isfile(file):
+        if path.isfile(file):
             f = open(file, 'rb')
             # TODO add exception handling
             try:

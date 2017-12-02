@@ -10,7 +10,8 @@ I hope to use AppID for authentication but I am very familiar with it and it loo
 
 There is also an interesting new service called [Key Protect](https://console.bluemix.net/docs/services/keymgmt/keyprotect_about.html#about-key-protect) [2] that I plan to take a look at. It is a secure key management service which is exactly what I need for generating and validating HMAC's.
 
-![](../assets/key-protect.png)
+![](../assets/key-protect-1.png)
+![](../assets/key-protect-2.png)
 
 **[1]** [https://console.bluemix.net/docs/services/Cloudant/cloudant.html#overview](https://console.bluemix.net/docs/services/Cloudant/cloudant.html#overview)
 

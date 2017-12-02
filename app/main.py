@@ -38,8 +38,7 @@ CONFIG = {
     'host': 'localhost',
     'db_name': socket.getfqdn(),
     'user': 'user',
-    'password': 'password',
-    'slack_token': os.getenv('SLACKTOKEN', 'xoxp-9999999999')
+    'password': 'password'
 }
 
 SETTINGS = {
@@ -58,12 +57,16 @@ cf_deployment_tracker.track()
 
 app = Flask(__name__)
 
-# BUF_SIZE is totally arbitrary, change for your app!
-BUF_SIZE = 65536  # lets read stuff in 64kb chunks!
+# BUF_SIZE for reading files
+BUF_SIZE = 65536  # 64k chunks
 
 client = None
 db = None
 
+# Define a background scheduler to scan files
+cron = BackgroundScheduler(daemon=True)
+
+# Initialise Bluemix and Cloudant configuration
 if 'VCAP_SERVICES' in os.environ:
     vcap = json.loads(os.getenv('VCAP_SERVICES'))
     print('Found VCAP_SERVICES')
@@ -85,7 +88,6 @@ elif os.path.isfile('vcap-local.json'):
         url = 'https://' + creds['host']
         client = Cloudant(user, password, url=url, connect=True)
 #       client.delete_database(CONFIG['db_name'])  # delete existing db for dev
-        print CONFIG['db_name']
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 
 
@@ -96,6 +98,15 @@ elif os.path.isfile('vcap-local.json'):
 @app.route('/')
 @protected
 def home():
+    if client:
+        items = []
+        for db in client.all_dbs():
+            print db
+            conn = client[db]
+            # retrieve the bot record
+            query = Query(conn, selector={'type': {'$eq': 'bot'}})
+            for item in query.result[0]:
+                print item['alive']
     return render_template('index.html')
 
 # /*
@@ -264,7 +275,6 @@ def writefiledata():
 # *     "file": "/path/file"
 # * }
 # */
-
 @app.route('/api/fimpy/scan', methods=['POST'])
 @protected
 def scan():
@@ -277,20 +287,42 @@ def scan():
         print('No database')
         return "", 500
 
+# /*
+#  * Function to scan files
+#  * # /*
+#  * Endpoint to get a JSON array of all the monitored files in the database
+#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Response:
+#  * @return An message string
+#  * Called on-demand from end-point and also as scheduled job
+#  * Response:
+#  * @return no returned value
+#  */
 def scanner():
     scanfiles(db, BUF_SIZE)
+
+def autoprotect():
+    if options.protect:
+        cron.add_job(scanner, 'interval', minutes=SETTINGS['scanner_interval'])
 
 
 @atexit.register
 def shutdown():
     if client:
         client.disconnect()
-        cron.shutdown(wait=False)
+        if cron:
+            cron.shutdown(wait=False)
 
 if __name__ == '__main__':
-    context = ('cert', 'key')
-    # Kick-off background thread to scan files
-    cron = BackgroundScheduler(daemon=True)
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-a", "--auto",
+                      action="store_true", dest="protect", default=False,
+                      help="Auto-protect - automatically protect files and monitor")
+    (options, args) = parser.parse_args()
     cron.start()
-    cron.add_job(scanner, 'interval', minutes=SETTINGS['scanner_interval'])
+    if options.protect:
+        autoprotect()
+        options.protect=False
+    context = ('cert', 'key')
     app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, use_reloader=False, debug=True)

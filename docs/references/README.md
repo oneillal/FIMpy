@@ -13,6 +13,13 @@ https://www.packtpub.com/books/content/python-ldap-applications-part-1-installin
 ### Python Flask Basic Auth Sample Code
 http://flask.pocoo.org/snippets/8/
 
+### Python Task Scheduling
+https://apscheduler.readthedocs.io/en/latest/userguide.html
+https://stackoverflow.com/questions/21214270/scheduling-a-function-to-run-every-hour-on-flask
+
+### Python Command-Line Options
+https://docs.python.org/2/library/optparse.html
+
 ### LDAP-as-a-Service
 https://jumpcloud.com/daas-product/ldap-as-a-service
 
