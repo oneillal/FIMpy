@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>Design & Requirements · GitBook</title>
+        <title>Time for Some UI · GitBook</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.3">
@@ -77,10 +77,10 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="mj2.html" />
+    <link rel="next" href="../references/" />
     
     
-    <link rel="prev" href="mj1-rwe.html" />
+    <link rel="prev" href="mj3-time-zone.html" />
     
 
     </head>
@@ -226,7 +226,7 @@
             
         </li>
     
-        <li class="chapter active" data-level="1.4.3" data-path="mj1-design-requirements.html">
+        <li class="chapter " data-level="1.4.3" data-path="mj1-design-requirements.html">
             
                 <a href="mj1-design-requirements.html">
             
@@ -452,7 +452,7 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.3" data-path="mj3-time-for-some-ui.html">
+        <li class="chapter active" data-level="1.6.3" data-path="mj3-time-for-some-ui.html">
             
                 <a href="mj3-time-for-some-ui.html">
             
@@ -578,7 +578,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >Design & Requirements</a>
+        <a href=".." >Time for Some UI</a>
     </h1>
 </div>
 
@@ -593,23 +593,12 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h2 id="design--requirements"><a name="design--requirements" class="plugin-anchor" href="#design--requirements"><i class="fa fa-link" aria-hidden="true"></i></a>Design &amp; Requirements</h2>
-<p>I&apos;ve called the application FIMpy! Originally I called it pyFIM only to google and find a million unrelated things called pyfim.
-Oh.
-And here is FIMpy...!</p>
-<p><img src="../assets/face-monkey.png" alt=""></p>
-<p>The initial design from my proposal was for a standalone FIM utility but it doesn&apos;t work well in a Cloud environment. I want to take advantage of services and develop a micro-service driven solution. That doesn&apos;t make sense if everything is local. What it you want to monitor many different hosts? I need to spend more time thinking about the solution architecture.</p>
-<p><img src="../assets/orig-design.png" alt=""></p>
-<p><strong>Update:</strong> I&apos;m starting to look at a client-server architecture using a master and slave approach. Any number of slaves deployed on a nodes to monitor files and send back integrity information to the master which verifies integrity by comparing information with that stored in a secure database. That will of course be a lot more work. I need to develop the client first and then look at the server. It needs to be micro-service driven so Flask is perfect. So all communication can be via REST.</p>
-<p>New design using services...
-<img src="../assets/new-design.png" alt=""></p>
-<p>NFR will be very important:</p>
-<ul>
-<li>Performance - Python/NoSQL may not be best. <a href="https://en.wikipedia.org/wiki/Cython" target="_blank">Cython</a> [1] can help with speed. We&apos;ll see how Cloudant performs with queries.</li>
-<li>Security - goes without saying. SSL encryption, secure authentication.</li>
-<li>Auditing - will need to be auditable.</li>
-</ul>
-<p>[1] <a href="https://en.wikipedia.org/wiki/Cython" target="_blank">https://en.wikipedia.org/wiki/Cython</a></p>
+                                <h1 id="time-for-some-you-eye"><a name="time-for-some-you-eye" class="plugin-anchor" href="#time-for-some-you-eye"><i class="fa fa-link" aria-hidden="true"></i></a>Time for Some You-Eye</h1>
+<p>Until now it&apos;s been all terminals and VI. Time for a bit of UI. I want to be able to show some real-time monitoring info.</p>
+<p><img src="../assets/fimpy-ui-1.png" alt=""></p>
+<p><a href="https://stackoverflow.com/questions/13315883/how-to-structure-data-to-easily-build-html-tables-in-flask" target="_blank">https://stackoverflow.com/questions/13315883/how-to-structure-data-to-easily-build-html-tables-in-flask</a></p>
+<p><a href="https://stackoverflow.com/questions/31965558/how-to-display-a-variable-in-html" target="_blank">https://stackoverflow.com/questions/31965558/how-to-display-a-variable-in-html</a></p>
+<p><a href="https://fonts.google.com/specimen/Inconsolata?selection.family=Inconsolata" target="_blank">https://fonts.google.com/specimen/Inconsolata?selection.family=Inconsolata</a></p>
 
                                 
                                 </section>
@@ -637,12 +626,12 @@ And here is FIMpy...!</p>
 
             
                 
-                <a href="mj1-rwe.html" class="navigation navigation-prev " aria-label="Previous page: Real World Evidence">
+                <a href="mj3-time-zone.html" class="navigation navigation-prev " aria-label="Previous page: Twilight-Zone">
                     <i class="fa fa-angle-left"></i>
                 </a>
                 
                 
-                <a href="mj2.html" class="navigation navigation-next " aria-label="Next page: Monthly Journal 2">
+                <a href="../references/" class="navigation navigation-next " aria-label="Next page: References">
                     <i class="fa fa-angle-right"></i>
                 </a>
                 
@@ -653,7 +642,7 @@ And here is FIMpy...!</p>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Design & Requirements","level":"1.4.3","depth":2,"next":{"title":"Monthly Journal 2","level":"1.5","depth":1,"path":"monthly-journal/mj2.md","ref":"monthly-journal/mj2.md","articles":[{"title":"Python","level":"1.5.1","depth":2,"path":"monthly-journal/mj2-python.md","ref":"monthly-journal/mj2-python.md","articles":[]},{"title":"HMAC","level":"1.5.2","depth":2,"path":"monthly-journal/mj2-hmac.md","ref":"monthly-journal/mj2-hmac.md","articles":[]},{"title":"Authentication Using LDAP","level":"1.5.3","depth":2,"path":"monthly-journal/mj2-authentication.md","ref":"monthly-journal/mj2-authentication.md","articles":[]},{"title":"Slack","level":"1.5.4","depth":2,"path":"monthly-journal/mj2-slack.md","ref":"monthly-journal/mj2-slack.md","articles":[]},{"title":"Bluemix","level":"1.5.5","depth":2,"path":"monthly-journal/mj2-bluemix.md","ref":"monthly-journal/mj2-bluemix.md","articles":[]},{"title":"Containers","level":"1.5.6","depth":2,"path":"monthly-journal/mj2-containers.md","ref":"monthly-journal/mj2-containers.md","articles":[]},{"title":"Kubernetes","level":"1.5.7","depth":2,"path":"monthly-journal/mj2-kubernetes.md","ref":"monthly-journal/mj2-kubernetes.md","articles":[]},{"title":"Early Testing","level":"1.5.8","depth":2,"path":"monthly-journal/mj2-early-testing.md","ref":"monthly-journal/mj2-early-testing.md","articles":[{"title":"POST /api/fimpy - Write monitored file info to db","level":"1.5.8.1","depth":3,"anchor":"#post-apifimpy---write-monitored-file-info-to-db","path":"monthly-journal/mj2-early-testing.md","ref":"monthly-journal/mj2-early-testing.md#post-apifimpy---write-monitored-file-info-to-db","articles":[]},{"title":"GET /api/fimpy - Read monitored file info from db","level":"1.5.8.2","depth":3,"anchor":"#get-apifimpy---read-monitored-file-info-from-db","path":"monthly-journal/mj2-early-testing.md","ref":"monthly-journal/mj2-early-testing.md#get-apifimpy---read-monitored-file-info-from-db","articles":[]},{"title":"LDAP Authenication Failure","level":"1.5.8.3","depth":3,"anchor":"#ldap-authenication-failure","path":"monthly-journal/mj2-early-testing.md","ref":"monthly-journal/mj2-early-testing.md#ldap-authenication-failure","articles":[]}]}]},"previous":{"title":"Real World Evidence","level":"1.4.2","depth":2,"path":"monthly-journal/mj1-rwe.md","ref":"monthly-journal/mj1-rwe.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github","codeblock-label","richquotes"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"codeblock-label":{},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"richquotes":{"default":false},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"monthly-journal/mj1-design-requirements.md","mtime":"2017-11-07T00:12:20.748Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-03T00:23:12.412Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Time for Some UI","level":"1.6.3","depth":2,"next":{"title":"References","level":"2.1","depth":1,"path":"references/README.md","ref":"references/README.md","articles":[{"title":"JumpCloud - LDAP-as-a-Service","level":"2.1.1","depth":2,"path":"references/jumpcloud.md","ref":"references/jumpcloud.md","articles":[]},{"title":"Docker Reference","level":"2.1.2","depth":2,"path":"references/docker.md","ref":"references/docker.md","articles":[]},{"title":"Kubernetes Reference","level":"2.1.3","depth":2,"path":"references/kube.md","ref":"references/kube.md","articles":[]},{"title":"GitBook","level":"2.1.4","depth":2,"path":"references/gitbook.md","ref":"references/gitbook.md","articles":[]}]},"previous":{"title":"Twilight-Zone","level":"1.6.2","depth":2,"path":"monthly-journal/mj3-time-zone.md","ref":"monthly-journal/mj3-time-zone.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github","codeblock-label","richquotes"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"codeblock-label":{},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"richquotes":{"default":false},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"monthly-journal/mj3-time-for-some-ui.md","mtime":"2017-12-03T00:18:34.246Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-03T00:23:12.412Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
