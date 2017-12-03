@@ -98,16 +98,23 @@ elif os.path.isfile('vcap-local.json'):
 @app.route('/')
 @protected
 def home():
+    results = {}
     if client:
-        items = []
+        alive = []; hosts = []; ipaddresses = [];
         for db in client.all_dbs():
-            print db
             conn = client[db]
-            # retrieve the bot record
+            # retrieve the bot record for each db
             query = Query(conn, selector={'type': {'$eq': 'bot'}})
             for item in query.result[0]:
-                print item['alive']
-    return render_template('index.html')
+                hosts.append(item['host'])
+                alive.append(item['alive'])
+                ipaddresses.append(item['ipaddress'])
+
+        results = {"hosts": hosts, "alive": alive, "ipaddresses": ipaddresses}
+        print results
+        from itertools import izip
+        results = [dict(hosts=c1, ipaddresses=c2, alive=c3) for c1, c2, c3 in izip(results['hosts'], results['ipaddresses'], results['alive'])]
+    return render_template('index.html', x=results)
 
 # /*
 #  * Endpoint to get a JSON array of all the monitored files in the database
@@ -199,9 +206,9 @@ def getfileinfo():
             item["hmac"] = document['hmac']
             items.append(item)
 
-            print(document['file'])
-            print('hash db> ' + document['hash'])
-            print('hmac db> ' + document['hmac'])
+            # print(document['file'])
+            # print('hash db> ' + document['hash'])
+            # print('hmac db> ' + document['hmac'])
 
         array = {"file": items}
         root = {"files": array}
@@ -325,4 +332,18 @@ if __name__ == '__main__':
         autoprotect()
         options.protect=False
     context = ('cert', 'key')
-    app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, use_reloader=False, debug=True)
+
+    if client:
+        db = client[CONFIG['db_name']]
+        # check if a bot record exists for this host otherwise create one
+        query = Query(db, selector={'type': {'$eq': 'bot'}})
+        print query.result
+        data = {'host': socket.getfqdn(),
+                'ipaddress': socket.gethostbyname(socket.gethostname()),
+                'registerdate': '',
+                'lastscandate': '',
+                'type': 'bot',
+                'alive': True}
+        db.create_document(data)
+
+    app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, use_reloader=True, debug=True)

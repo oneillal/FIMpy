@@ -18,10 +18,25 @@
         <h1 class="text-center"><img src="static/face-monkey.png">&nbsp;FIMpy - File Integrity Monitor</h1>
         <div align="center">
             <button id="submit" type="button" class="form-control" aria-describedby="sizing-addon1" style="width: 250px">Execute</button>
-        </div>
-        <p id="response" class="lead text-center"></p>
+            <p id="response" class="lead text-center"></p>
+            <p id="monitoredFiles" class="lead text-center"></p>
 
-        <p id="monitoredFiles" class="lead text-center"></p>
+            <table id="clients">
+                <tr>
+                    <th>Hosts</th>
+                    <th>IP Address</th>
+                    <th>Alive</th>
+                </tr>
+                {% for row in x %}
+                    <tr>
+                      <td>{{ row['hosts'] }}</td>
+                      <td>{{ row['ipaddresses'] }}</td>
+                      <td><span class="fa fa-thumbs-o-up" style="font-size: 15px; color: green"></span>&nbsp;{{ row['alive']|tojson|safe }}</td>
+                      <!--<td>{{ row['alive']|tojson|safe }}</td>-->
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -64,6 +79,7 @@
 
 
     </script>
+
 </body>
 
 </html>
