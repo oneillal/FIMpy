@@ -24,6 +24,11 @@
       * [POST /api/fimpy - Write monitored file info to db](monthly-journal/mj2-early-testing.md#post-apifimpy---write-monitored-file-info-to-db)
       * [GET /api/fimpy - Read monitored file info from db](monthly-journal/mj2-early-testing.md#get-apifimpy---read-monitored-file-info-from-db)
       * [LDAP Authenication Failure](monthly-journal/mj2-early-testing.md#ldap-authenication-failure)
+* [Monthly Journal 3](monthly-journal/mj3.md)
+    * [Python Job Scheduling](monthly-journal/mj3-scheduling.md)
+    * [Twilight-Zone](monthly-journal/mj3-time-zone.md)
+    * [Time for Some UI](monthly-journal/mj3-time-for-some-ui.md)
+
 
 * [References](references/README.md)
   * [JumpCloud - LDAP-as-a-Service](references/jumpcloud.md)
