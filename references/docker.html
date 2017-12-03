@@ -530,38 +530,129 @@
                                 
                                 <h1 id="docker-reference"><a name="docker-reference" class="plugin-anchor" href="#docker-reference"><i class="fa fa-link" aria-hidden="true"></i></a>Docker Reference</h1>
 <h3 id="building-the-fimpy-image"><a name="building-the-fimpy-image" class="plugin-anchor" href="#building-the-fimpy-image"><i class="fa fa-link" aria-hidden="true"></i></a>Building the FIMpy Image</h3>
-<pre><code class="lang-bash">~/dev/project/FIMpy/app(master*) &#xBB; docker build -t alanoneill/fimpy:latest .
-Sending build context to Docker daemon  71.17kB
-Step 1/10 : FROM ubuntu:zesty
+<pre><code class="lang-bash">~/dev/project/FIMpy/app(master*) &#xBB; docker build -t alanoneill/fimpy:latest .       oneillal@xubuntu
+Sending build context to Docker daemon  1.376MB
+Step 1/12 : FROM ubuntu:zesty
  ---&gt; 5e9fde03a0de
-Step 2/10 : MAINTAINER <span class="hljs-string">&quot;alan.oneill75@gmail.com&quot;</span>
+Step 2/12 : MAINTAINER <span class="hljs-string">&quot;alan.oneill75@gmail.com&quot;</span>
  ---&gt; Using cache
  ---&gt; 5914a7f13422
-Step 3/10 : RUN apt-get update -y
+Step 3/12 : RUN apt-get update -y
  ---&gt; Using cache
  ---&gt; e5f757b323dc
-Step 4/10 : RUN apt-get install -y python-pip python-dev build-essential libldap2-dev libsasl2-dev libssl-dev
+Step 4/12 : RUN apt-get install -y python-pip python-dev build-essential libldap2-dev libsasl2-dev libssl-dev
  ---&gt; Using cache
  ---&gt; 814066000105
-Step 5/10 : COPY . /app
- ---&gt; Using cache
- ---&gt; 56cdbebdee06
-Step 6/10 : WORKDIR /app
- ---&gt; Using cache
- ---&gt; 8ff32a4630b2
-Step 7/10 : RUN pip install -r requirements.txt
- ---&gt; Using cache
- ---&gt; 0c9d470d64cf
-Step 8/10 : EXPOSE 5000
- ---&gt; Using cache
- ---&gt; 725ca2626d92
-Step 9/10 : ENV SLACKTOKEN
- ---&gt; Using cache
- ---&gt; 0e559213ef1e
-Step 10/10 : CMD python -u main.py
- ---&gt; Using cache
- ---&gt; a052e2fe335b
-Successfully built a052e2fe335b
+Step 5/12 : COPY . /app
+ ---&gt; 3bdabe4b6e42
+Step 6/12 : WORKDIR /app
+ ---&gt; 609fb51cea1a
+Removing intermediate container 72dd27b152b1
+Step 7/12 : RUN pip install -r requirements.txt
+ ---&gt; Running <span class="hljs-keyword">in</span> 53650b470620
+Collecting Flask==0.12.2 (from -r requirements.txt (line 1))
+  Downloading Flask-0.12.2-py2.py3-none-any.whl (83kB)
+Collecting cf-deployment-tracker==1.0.4 (from -r requirements.txt (line 2))
+  Downloading cf_deployment_tracker-1.0.4-py2.py3-none-any.whl
+Collecting cloudant==2.4.0 (from -r requirements.txt (line 3))
+  Downloading cloudant-2.4.0-py2-none-any.whl (66kB)
+Collecting slacker==0.9.60 (from -r requirements.txt (line 4))
+  Downloading slacker-0.9.60.tar.gz
+Collecting pyopenssl (from -r requirements.txt (line 5))
+  Downloading pyOpenSSL-17.5.0-py2.py3-none-any.whl (53kB)
+Collecting python-ldap==2.4.28 (from -r requirements.txt (line 6))
+  Downloading python-ldap-2.4.28.tar.gz (125kB)
+Collecting pytz (from -r requirements.txt (line 7))
+  Downloading pytz-2017.3-py2.py3-none-any.whl (511kB)
+Collecting apscheduler (from -r requirements.txt (line 8))
+  Downloading APScheduler-3.4.0-py2.py3-none-any.whl (57kB)
+Collecting click&gt;=2.0 (from Flask==0.12.2-&gt;-r requirements.txt (line 1))
+  Downloading click-6.7-py2.py3-none-any.whl (71kB)
+Collecting Werkzeug&gt;=0.7 (from Flask==0.12.2-&gt;-r requirements.txt (line 1))
+  Downloading Werkzeug-0.12.2-py2.py3-none-any.whl (312kB)
+Collecting Jinja2&gt;=2.4 (from Flask==0.12.2-&gt;-r requirements.txt (line 1))
+  Downloading Jinja2-2.10-py2.py3-none-any.whl (126kB)
+Collecting itsdangerous&gt;=0.21 (from Flask==0.12.2-&gt;-r requirements.txt (line 1))
+  Downloading itsdangerous-0.24.tar.gz (46kB)
+Collecting requests&gt;=2 (from cf-deployment-tracker==1.0.4-&gt;-r requirements.txt (line 2))
+  Downloading requests-2.18.4-py2.py3-none-any.whl (88kB)
+Collecting cryptography&gt;=2.1.4 (from pyopenssl-&gt;-r requirements.txt (line 5))
+  Downloading cryptography-2.1.4-cp27-cp27mu-manylinux1_x86_64.whl (2.2MB)
+Requirement already satisfied: six&gt;=1.5.2 <span class="hljs-keyword">in</span> /usr/lib/python2.7/dist-packages (from pyopenssl-&gt;-r requirements.txt (line 5))
+Requirement already satisfied: setuptools <span class="hljs-keyword">in</span> /usr/lib/python2.7/dist-packages (from python-ldap==2.4.28-&gt;-r requirements.txt (line 6))
+Collecting funcsigs; python_version == <span class="hljs-string">&quot;2.7&quot;</span> (from apscheduler-&gt;-r requirements.txt (line 8))
+  Downloading funcsigs-1.0.2-py2.py3-none-any.whl
+Collecting tzlocal&gt;=1.2 (from apscheduler-&gt;-r requirements.txt (line 8))
+  Downloading tzlocal-1.5.1.tar.gz
+Collecting futures; python_version == <span class="hljs-string">&quot;2.7&quot;</span> (from apscheduler-&gt;-r requirements.txt (line 8))
+  Downloading futures-3.2.0-py2-none-any.whl
+Collecting MarkupSafe&gt;=0.23 (from Jinja2&gt;=2.4-&gt;Flask==0.12.2-&gt;-r requirements.txt (line 1))
+  Downloading MarkupSafe-1.0.tar.gz
+Collecting chardet&lt;3.1.0,&gt;=3.0.2 (from requests&gt;=2-&gt;cf-deployment-tracker==1.0.4-&gt;-r requirements.txt (line 2))
+  Downloading chardet-3.0.4-py2.py3-none-any.whl (133kB)
+Collecting certifi&gt;=2017.4.17 (from requests&gt;=2-&gt;cf-deployment-tracker==1.0.4-&gt;-r requirements.txt (line 2))
+  Downloading certifi-2017.11.5-py2.py3-none-any.whl (330kB)
+Collecting urllib3&lt;1.23,&gt;=1.21.1 (from requests&gt;=2-&gt;cf-deployment-tracker==1.0.4-&gt;-r requirements.txt (line 2))
+  Downloading urllib3-1.22-py2.py3-none-any.whl (132kB)
+Collecting idna&lt;2.7,&gt;=2.5 (from requests&gt;=2-&gt;cf-deployment-tracker==1.0.4-&gt;-r requirements.txt (line 2))
+  Downloading idna-2.6-py2.py3-none-any.whl (56kB)
+Collecting cffi&gt;=1.7; platform_python_implementation != <span class="hljs-string">&quot;PyPy&quot;</span> (from cryptography&gt;=2.1.4-&gt;pyopenssl-&gt;-r requirements.txt (line 5))
+  Downloading cffi-1.11.2-cp27-cp27mu-manylinux1_x86_64.whl (405kB)
+Requirement already satisfied: enum34; python_version &lt; <span class="hljs-string">&quot;3&quot;</span> <span class="hljs-keyword">in</span> /usr/lib/python2.7/dist-packages (from cryptography&gt;=2.1.4-&gt;pyopenssl-&gt;-r requirements.txt (line 5))
+Requirement already satisfied: ipaddress; python_version &lt; <span class="hljs-string">&quot;3&quot;</span> <span class="hljs-keyword">in</span> /usr/lib/python2.7/dist-packages (from cryptography&gt;=2.1.4-&gt;pyopenssl-&gt;-r requirements.txt (line 5))
+Collecting asn1crypto&gt;=0.21.0 (from cryptography&gt;=2.1.4-&gt;pyopenssl-&gt;-r requirements.txt (line 5))
+  Downloading asn1crypto-0.23.0-py2.py3-none-any.whl (99kB)
+Collecting pycparser (from cffi&gt;=1.7; platform_python_implementation != <span class="hljs-string">&quot;PyPy&quot;</span>-&gt;cryptography&gt;=2.1.4-&gt;pyopenssl-&gt;-r requirements.txt (line 5))
+  Downloading pycparser-2.18.tar.gz (245kB)
+Building wheels <span class="hljs-keyword">for</span> collected packages: slacker, python-ldap, itsdangerous, tzlocal, MarkupSafe, pycparser
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> slacker: started
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> slacker: finished with status <span class="hljs-string">&apos;done&apos;</span>
+  Stored <span class="hljs-keyword">in</span> directory: /root/.cache/pip/wheels/57/61/2c/99406ad2141fdf3ede576acedad209a3b63b9674af56bbfa19
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> python-ldap: started
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> python-ldap: finished with status <span class="hljs-string">&apos;done&apos;</span>
+  Stored <span class="hljs-keyword">in</span> directory: /root/.cache/pip/wheels/fb/35/3a/620971eea137c1452e122f9aef8820cf5f8e0f1c0413d4c8e6
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> itsdangerous: started
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> itsdangerous: finished with status <span class="hljs-string">&apos;done&apos;</span>
+  Stored <span class="hljs-keyword">in</span> directory: /root/.cache/pip/wheels/<span class="hljs-built_in">fc</span>/a8/66/24d655233c757e178d45dea2de22a04c6d92766abfb741129a
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> tzlocal: started
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> tzlocal: finished with status <span class="hljs-string">&apos;done&apos;</span>
+  Stored <span class="hljs-keyword">in</span> directory: /root/.cache/pip/wheels/7c/a1/5d/0f37ce6eb6eea391bd185f5747429a93519be115d007263bcf
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> MarkupSafe: started
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> MarkupSafe: finished with status <span class="hljs-string">&apos;done&apos;</span>
+  Stored <span class="hljs-keyword">in</span> directory: /root/.cache/pip/wheels/88/a7/30/e39a54a87bcbe25308fa3ca64e8ddc75d9b3e5afa21ee32d57
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> pycparser: started
+  Running setup.py bdist_wheel <span class="hljs-keyword">for</span> pycparser: finished with status <span class="hljs-string">&apos;done&apos;</span>
+  Stored <span class="hljs-keyword">in</span> directory: /root/.cache/pip/wheels/95/14/9a/5e7b9024459d2a6600aaa64e0ba485325aff7a9ac7489db1b6
+Successfully built slacker python-ldap itsdangerous tzlocal MarkupSafe pycparser
+Installing collected packages: click, Werkzeug, MarkupSafe, Jinja2, itsdangerous, Flask, chardet, certifi, urllib3, idna, requests, cf-deployment-tracker, cloudant, slacker, pycparser, cffi, asn1crypto, cryptography, pyopenssl, python-ldap, pytz, funcsigs, tzlocal, futures, apscheduler
+  Found existing installation: idna 2.2
+    Not uninstalling idna at /usr/lib/python2.7/dist-packages, outside environment /usr
+  Found existing installation: cryptography 1.7.1
+    Not uninstalling cryptography at /usr/lib/python2.7/dist-packages, outside environment /usr
+Successfully installed Flask-0.12.2 Jinja2-2.10 MarkupSafe-1.0 Werkzeug-0.12.2 apscheduler-3.4.0 asn1crypto-0.23.0 certifi-2017.11.5 cf-deployment-tracker-1.0.4 cffi-1.11.2 chardet-3.0.4 click-6.7 cloudant-2.4.0 cryptography-2.1.4 funcsigs-1.0.2 futures-3.2.0 idna-2.6 itsdangerous-0.24 pycparser-2.18 pyopenssl-17.5.0 python-ldap-2.4.28 pytz-2017.3 requests-2.18.4 slacker-0.9.60 tzlocal-1.5.1 urllib3-1.22
+ ---&gt; dee3dcf2cdd6
+Removing intermediate container 53650b470620
+Step 8/12 : ENV TZ Europe/Dublin
+ ---&gt; Running <span class="hljs-keyword">in</span> 86516e5bbaf0
+ ---&gt; 8e5a9bc6b218
+Removing intermediate container 86516e5bbaf0
+Step 9/12 : RUN ln -snf /usr/share/zoneinfo/<span class="hljs-variable">$TZ</span> /etc/localtime &amp;&amp; <span class="hljs-built_in">echo</span> <span class="hljs-variable">$TZ</span> &gt; /etc/timezone
+ ---&gt; Running <span class="hljs-keyword">in</span> a713a30f5653
+ ---&gt; 2b7d12c15bdd
+Removing intermediate container a713a30f5653
+Step 10/12 : EXPOSE 5000
+ ---&gt; Running <span class="hljs-keyword">in</span> 9116dd7c5ee9
+ ---&gt; a584a9d72491
+Removing intermediate container 9116dd7c5ee9
+Step 11/12 : ENV SLACKTOKEN
+ ---&gt; Running <span class="hljs-keyword">in</span> df11fb9e4046
+ ---&gt; 5742487bdabf
+Removing intermediate container df11fb9e4046
+Step 12/12 : CMD python -u main.py
+ ---&gt; Running <span class="hljs-keyword">in</span> 8ba97f6b39ec
+ ---&gt; 03084ca8c992
+Removing intermediate container 8ba97f6b39ec
+Successfully built 03084ca8c992
 Successfully tagged alanoneill/fimpy:latest
 </code></pre>
 <h3 id="starting-a-fimpy-container"><a name="starting-a-fimpy-container" class="plugin-anchor" href="#starting-a-fimpy-container"><i class="fa fa-link" aria-hidden="true"></i></a>Starting a FIMpy Container</h3>
@@ -625,7 +716,7 @@ latest: digest: sha256:abde77d42f93270b12836181baae8615298229bc4a9aa2359997b70a0
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Docker Reference","level":"1.6.2","depth":2,"next":{"title":"Kubernetes Reference","level":"1.6.3","depth":2,"path":"references/kube.md","ref":"references/kube.md","articles":[]},"previous":{"title":"JumpCloud - LDAP-as-a-Service","level":"1.6.1","depth":2,"path":"references/jumpcloud.md","ref":"references/jumpcloud.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github","codeblock-label","richquotes"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"codeblock-label":{},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"richquotes":{"default":false},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"references/docker.md","mtime":"2017-12-02T10:47:15.687Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-02T10:47:44.124Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Docker Reference","level":"1.6.2","depth":2,"next":{"title":"Kubernetes Reference","level":"1.6.3","depth":2,"path":"references/kube.md","ref":"references/kube.md","articles":[]},"previous":{"title":"JumpCloud - LDAP-as-a-Service","level":"1.6.1","depth":2,"path":"references/jumpcloud.md","ref":"references/jumpcloud.md","articles":[]},"dir":"ltr"},"config":{"plugins":["expandable-chapters","anchors","splitter","github","codeblock-label","richquotes"],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/oneillal/FIMpy"},"codeblock-label":{},"splitter":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"richquotes":{"default":false},"highlight":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"gitbook":"*"},"file":{"path":"references/docker.md","mtime":"2017-12-02T23:49:22.568Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2017-12-03T00:20:02.369Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
