@@ -23,15 +23,29 @@
 
             <table id="clients">
                 <tr>
-                    <th>Hosts</th>
+                    <th>Host</th>
                     <th>IP Address</th>
                     <th>Alive</th>
+                    <th>Status</th>
                 </tr>
                 {% for row in x %}
                     <tr>
-                      <td>{{ row['hosts'] }}</td>
+                      <td><img src="static/blue-diamond-16.png" />&nbsp;{{ row['hosts'] }}</td>
                       <td>{{ row['ipaddresses'] }}</td>
-                      <td><span class="fa fa-thumbs-o-up" style="font-size: 15px; color: green"></span>&nbsp;{{ row['alive']|tojson|safe }}</td>
+                      <td align="center" width="28">
+                          {% if row['alive'] == true %}
+                            <img src="static/green-circle-16.png" />
+                          {% else %}
+                            <img src="static/red-circle-16.png" />
+                          {% endif %}
+                      </td>
+                      <td align="center" width="28">
+                          {% if row['status'] == 1 %}
+                            <img src="static/protected-lock-16.png" />
+                          {% elif row['status'] == 2 %}
+                            <img src="static/protected-shield-16.png" />
+                          {% endif %}
+                      </td>
                       <!--<td>{{ row['alive']|tojson|safe }}</td>-->
                     </tr>
                 {% endfor %}

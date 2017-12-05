@@ -5,6 +5,7 @@ RUN apt-get install -y python-pip python-dev build-essential libldap2-dev libsas
 COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
+ENV PYTHONUNBUFFERED=0
 ENV TZ=Europe/Dublin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 EXPOSE 5000

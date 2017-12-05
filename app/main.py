@@ -25,10 +25,12 @@ import atexit
 import cf_deployment_tracker
 import json
 import os
+import sys
 import glob
 import socket
 import hashlib
 import hmac
+import requests
 
 #######################################################################
 CONFIG = {
@@ -77,6 +79,7 @@ if 'VCAP_SERVICES' in os.environ:
         url = 'https://' + creds['host']
         client = Cloudant(user, password, url=url, connect=True)
 #       client.delete_database(CONFIG['db_name'])  # delete existing db for dev
+        print CONFIG['db_name']
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 elif os.path.isfile('vcap-local.json'):
     with open('vcap-local.json') as f:
@@ -88,9 +91,10 @@ elif os.path.isfile('vcap-local.json'):
         url = 'https://' + creds['host']
         client = Cloudant(user, password, url=url, connect=True)
 #       client.delete_database(CONFIG['db_name'])  # delete existing db for dev
+        print CONFIG['db_name']
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 
-
+print client
 #######################################################################################
 #######################################################################################
 #######################################################################################
@@ -100,20 +104,36 @@ elif os.path.isfile('vcap-local.json'):
 def home():
     results = {}
     if client:
-        alive = []; hosts = []; ipaddresses = [];
+        alive = []; hosts = []; ipaddresses = []; status = [];
         for db in client.all_dbs():
             conn = client[db]
             # retrieve the bot record for each db
             query = Query(conn, selector={'type': {'$eq': 'bot'}})
             for item in query.result[0]:
                 hosts.append(item['host'])
-                alive.append(item['alive'])
                 ipaddresses.append(item['ipaddress'])
+                status.append(item['status'])
+                if (item['host'] == CONFIG['db_name'] and item['ipaddress'] == '127.0.0.1'):
+                    alive.append(True)
+                    next
 
-        results = {"hosts": hosts, "alive": alive, "ipaddresses": ipaddresses}
+                ping = 'https://' + item['ipaddress'] + ':5000/api/fimpy/ping'
+                print ping
+                try:
+                    r = requests.get(ping, timeout=2, cert=('ssl/cert', 'ssl/key'), verify=False)
+                    if r.status_code == requests.codes.ok:
+                        alive.append(True)
+                    else:
+                        alive.append(False)
+                    break
+                except requests.ConnectionError:
+                    alive.append(False)
+                    print "Exception occurred:", sys.exc_info()[0]
+
+        results = {"hosts": hosts, "alive": alive, "ipaddresses": ipaddresses, "status": status}
         print results
         from itertools import izip
-        results = [dict(hosts=c1, ipaddresses=c2, alive=c3) for c1, c2, c3 in izip(results['hosts'], results['ipaddresses'], results['alive'])]
+        results = [dict(hosts=c1, ipaddresses=c2, alive=c3, status=c4) for c1, c2, c3, c4 in izip(results['hosts'], results['ipaddresses'], results['alive'], results['status'])]
     return render_template('index.html', x=results)
 
 # /*
@@ -122,9 +142,8 @@ def home():
 #  * Response:
 #  * @return An message string
 #  */
-@app.route('/api/fimpy/test', methods=['GET'])
-@protected
-def test():
+@app.route('/api/fimpy/ping', methods=['GET'])
+def ping():
     print ""
     return json.dumps({}), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
@@ -331,19 +350,20 @@ if __name__ == '__main__':
     if options.protect:
         autoprotect()
         options.protect=False
-    context = ('cert', 'key')
+    context = ('ssl/cert', 'ssl/key')
 
     if client:
         db = client[CONFIG['db_name']]
         # check if a bot record exists for this host otherwise create one
         query = Query(db, selector={'type': {'$eq': 'bot'}})
-        print query.result
+        # TODO check if bot record already exists
         data = {'host': socket.getfqdn(),
                 'ipaddress': socket.gethostbyname(socket.gethostname()),
                 'registerdate': '',
                 'lastscandate': '',
                 'type': 'bot',
-                'alive': True}
+                'alive': True,
+                'status': 1}
         db.create_document(data)
 
-    app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, use_reloader=True, debug=True)
+    app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, use_reloader=False, debug=True)
