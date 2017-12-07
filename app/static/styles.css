@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css?family=Inconsolata");
+@import url("https://fonts.google.com/specimen/Lora");
+
 @import url("fa/css/font-awesome.min.css");
+
+h1 { font-family: "Inconsolata", "Trebuchet MS", Arial, Helvetica, sans-serif; }
 
 #clients {
     font-family: "Inconsolata", "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -17,6 +21,9 @@
 #clients tr:hover {background-color: #ddd;}
 
 #clients th {
+    font-family: "Lora", "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 12px;
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;

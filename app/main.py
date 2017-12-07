@@ -12,10 +12,11 @@ __status__ = "Development"
 
 # local imports
 from auth import protected
-from func import scanfiles
+from func import scandocs
 
 from cloudant.client import Cloudant
 from cloudant.query import Query
+from cloudant.document import Document
 
 from flask import Flask, render_template, request, abort
 
@@ -31,6 +32,7 @@ import socket
 import hashlib
 import hmac
 import requests
+from ibmkeyprotect import getkey
 
 #######################################################################
 CONFIG = {
@@ -44,13 +46,14 @@ CONFIG = {
 }
 
 SETTINGS = {
-    'scanner_interval': 1
+    'scanner_interval': 1,
+    'alert': False
 }
 
 PATHS = {
 # Array of paths to be monitored e.g. 'paths': ['/path1', '/path2/path3']
 #   'paths': ['/bin', '/usr/bin/python2.7']
-    'paths': ['test', 'static']
+    'paths': ['test']
 }
 #######################################################################
 
@@ -65,7 +68,7 @@ BUF_SIZE = 65536  # 64k chunks
 client = None
 db = None
 
-# Define a background scheduler to scan files
+# Define a background scheduler to scan docs
 cron = BackgroundScheduler(daemon=True)
 
 # Initialise Bluemix and Cloudant configuration
@@ -79,7 +82,6 @@ if 'VCAP_SERVICES' in os.environ:
         url = 'https://' + creds['host']
         client = Cloudant(user, password, url=url, connect=True)
 #       client.delete_database(CONFIG['db_name'])  # delete existing db for dev
-        print CONFIG['db_name']
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 elif os.path.isfile('vcap-local.json'):
     with open('vcap-local.json') as f:
@@ -90,11 +92,8 @@ elif os.path.isfile('vcap-local.json'):
         password = creds['password']
         url = 'https://' + creds['host']
         client = Cloudant(user, password, url=url, connect=True)
-#       client.delete_database(CONFIG['db_name'])  # delete existing db for dev
-        print CONFIG['db_name']
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 
-print client
 #######################################################################################
 #######################################################################################
 #######################################################################################
@@ -106,54 +105,49 @@ def home():
     if client:
         alive = []; hosts = []; ipaddresses = []; status = [];
         for db in client.all_dbs():
-            conn = client[db]
             # retrieve the bot record for each db
-            query = Query(conn, selector={'type': {'$eq': 'bot'}})
-            for item in query.result[0]:
-                hosts.append(item['host'])
-                ipaddresses.append(item['ipaddress'])
-                status.append(item['status'])
-                if (item['host'] == CONFIG['db_name'] and item['ipaddress'] == '127.0.0.1'):
+            with Document(client[db], 'bot') as bot:
+                if bot['status'] == 1: # compromised
+                    next # skip hosts that are reporting compromised state
+                hosts.append(bot['host'])
+                ipaddresses.append(bot['ipaddress'])
+                status.append(bot['status'])
+                if (bot['host'] == CONFIG['db_name']): # no need to ping this instance
                     alive.append(True)
-                    next
-
-                ping = 'https://' + item['ipaddress'] + ':5000/api/fimpy/ping'
-                print ping
-                try:
-                    r = requests.get(ping, timeout=2, cert=('ssl/cert', 'ssl/key'), verify=False)
-                    if r.status_code == requests.codes.ok:
-                        alive.append(True)
-                    else:
+                else:
+                    ping = 'https://' + bot['ipaddress'] + ':5000/api/fimpy/ping'
+                    try:
+                        r = requests.get(ping, timeout=2, cert=('ssl/cert', 'ssl/key'), verify=False)
+                        if r.status_code == requests.codes.ok:
+                            alive.append(True)
+                        else:
+                            alive.append(False)
+                    except requests.ConnectionError:
                         alive.append(False)
-                    break
-                except requests.ConnectionError:
-                    alive.append(False)
-                    print "Exception occurred:", sys.exc_info()[0]
+                        print "Exception occurred:", sys.exc_info()[0]
 
         results = {"hosts": hosts, "alive": alive, "ipaddresses": ipaddresses, "status": status}
-        print results
         from itertools import izip
         results = [dict(hosts=c1, ipaddresses=c2, alive=c3, status=c4) for c1, c2, c3, c4 in izip(results['hosts'], results['ipaddresses'], results['alive'], results['status'])]
     return render_template('index.html', x=results)
 
 # /*
-#  * Endpoint to get a JSON array of all the monitored files in the database
-#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Endpoint for an app instance heat-beat
+#  * Send a GET request to localhost:8000/api/fimpy/ping
 #  * Response:
-#  * @return An message string
+#  * @return A response to indicate the app instance is running
 #  */
-@app.route('/api/fimpy/ping', methods=['GET'])
+@app.route('/api/v1/ping', methods=['GET'])
 def ping():
-    print ""
     return json.dumps({}), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
 # /*
-#  * Endpoint to get a JSON array of all the monitored files in the database
-#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Endpoint to get a JSON array of the app instance config
+#  * Send a GET request to localhost:5000/api/fimpy/config
 #  * Response:
-#  * @return An message string
+#  * @return An json string with config
 #  */
-@app.route('/api/fimpy/config', methods=['GET'])
+@app.route('/api/v1/config', methods=['GET'])
 @protected
 def getconfig():
     if client:
@@ -163,12 +157,12 @@ def getconfig():
         return json.dumps([]), 500, {'Content-Type': 'application/json; charset=utf-8'}
 
 # /*
-#  * Endpoint to get a JSON array of all the monitored files in the database
-#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Endpoint to get a JSON array of the app instance monitored paths
+#  * Send a GET request to localhost:5000/api/fimpy/config/paths
 #  * Response:
-#  * @return An message string
+#  * @return An json string
 #  */
-@app.route('/api/fimpy/config/path', methods=['GET'])
+@app.route('/api/v1/config/path', methods=['GET'])
 @protected
 def getpath():
     if client:
@@ -179,12 +173,12 @@ def getpath():
 
 
 # /*
-#  * Endpoint to get a JSON array of all the monitored files in the database
-#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Endpoint to post a JSON array of a new app instance monitored path
+#  * Send a POST request to localhost:5000/api/fimpy/path/config/paths with body
 #  * Response:
-#  * @return An message string
+#  * @return An json string
 #  */
-@app.route('/api/fimpy/config/path', methods=['POST'])
+@app.route('/api/v1/config/path', methods=['POST'])
 @protected
 def setpath():
     if not request.json:
@@ -195,27 +189,27 @@ def setpath():
         print('No database')
         return json.dumps(PATHS, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
-# /* Endpoint to get the monitored files from the database.
-#  * Endpoint to get a JSON array of all the monitored files in the database
+
+#  /* Endpoint to get a JSON array of all the monitored docs in the database
 #  * <code>
-#  * GET http://localhost:8000/api/fimpy
+#  * GET http://localhost:5000/api/fimpy
 #  * </code>
 # * {
 # *     "file": "/path/file",
 # *     "file": "/path/file"
 # * }
 # */
-@app.route('/api/fimpy', methods=['GET'])
+@app.route('/api/v1/docs', methods=['GET'])
 @protected
 def getfileinfo():
     if client:
         items = []
 
-        # retrieve docs of type proof
-        query = Query(db, selector={'type': {'$eq': 'proof'}})
+        # retrieve docs of type data
+        query = Query(db, selector={'type': {'$eq': 'doc'}})
 
         for document in query.result:
-            item = {"file": document['file']}
+            item = {"file": document['_id']}
             item["host"] = document['host']
             item["ipaddress"] = document['ipaddress']
             item["size"] = document['size']
@@ -223,14 +217,10 @@ def getfileinfo():
             item["modifydate"] = document['modifydate']
             item["hash"] = document['hash']
             item["hmac"] = document['hmac']
+            item["status"] = document['status']
             items.append(item)
 
-            # print(document['file'])
-            # print('hash db> ' + document['hash'])
-            # print('hmac db> ' + document['hmac'])
-
-        array = {"file": items}
-        root = {"files": array}
+        root = {"docs": items}
 
         return json.dumps(root, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
     else:
@@ -238,16 +228,16 @@ def getfileinfo():
         return json.dumps([]), 500, {'Content-Type': 'application/json; charset=utf-8'}
 
 # /*
-#  * Endpoint to get a JSON array of all the monitored files in the database
-#  * Send a POST request to localhost:8000/api/fimpy with body
+#  * Endpoint to invoke the app to scan the monitored paths and store file data in the database
+#  * Send a POST request to localhost:8000/api/fimpy
 #  * Response:
-#  * @return An message string
+#  * @return An json string with file data added to the database
 #  */
-@app.route('/api/fimpy', methods=['POST'])
+@app.route('/api/v1/docs', methods=['POST'])
 @protected
 def writefiledata():
-    if not request.json:
-        abort(400)
+    # if not request.json:
+    #     abort(400)
     items = []
     for path in PATHS['paths']:
 #TODO add path based monitoring rules
@@ -257,7 +247,7 @@ def writefiledata():
 #TODO add exception handling
                 try:
                     sha256 = hashlib.sha256()
-                    digest = hmac.new('secret-shared-key-goes-here', '', hashlib.sha256)
+                    digest = hmac.new(getkey(), '', hashlib.sha256)
                     while True:
                         block = f.read(BUF_SIZE)
                         if not block:
@@ -280,52 +270,51 @@ def writefiledata():
                             'modifydate': os.path.getmtime(file),
                             'hash': sha256.hexdigest(),
                             'hmac': digest.hexdigest(),
-                            'type': 'proof'}
-                    db.create_document(data)
+                            'type': 'doc',
+                            'status': 1}
+                    # db.create_document(data)
                     items.append(data)
+                    with Document(db, data['file']) as file:
+                        file['host'] = data['host']
+                        file['ipaddress'] = data['ipaddress']
+                        file['size'] = data['size']
+                        file['createdate'] = data['createdate']
+                        file['modifydate'] = data['modifydate']
+                        file['hash'] = data['hash']
+                        file['hmac'] = data['hmac']
+                        file['type'] = data['type']
+                        file['status'] = data['status']
 
-    array = {"file": items}
-    root = {"files": array}
+    with Document(db, 'bot') as bot:
+        bot['status'] = 1 # protecting
+
+    root = {"docs": items}
 
 # TODO return proper json payload
-    print 'Records added to db'
     return json.dumps(root, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
-# /* Endpoint to get the monitored files from the database.
-#  * Endpoint to get a JSON array of all the monitored files in the database
-#  * <code>
-#  * GET http://localhost:8000/api/fimpy
-#  * </code>
-# * {
-# *     "file": "/path/file",
-# *     "file": "/path/file"
-# * }
-# */
-@app.route('/api/fimpy/scan', methods=['POST'])
+
+#  /* Endpoint to invoke the app instance to scan the monitored docs in the database for integrity
+#  * POST http://localhost:5000/api/fimpy/scan
+#  * Response:
+#  * @return An json string with scan details
+#  */
+@app.route('/api/v1/scan', methods=['POST'])
 @protected
 def scan():
     if client:
-        scanner()
+        items = scanner()
+        root = {"docs": items}
 
 # TODO return proper json payload
-        return "", 200
+        return json.dumps(root, sort_keys=True, indent=2), 200, {'Content-Type': 'application/json; charset=utf-8'}
     else:
         print('No database')
         return "", 500
 
-# /*
-#  * Function to scan files
-#  * # /*
-#  * Endpoint to get a JSON array of all the monitored files in the database
-#  * Send a POST request to localhost:8000/api/fimpy with body
-#  * Response:
-#  * @return An message string
-#  * Called on-demand from end-point and also as scheduled job
-#  * Response:
-#  * @return no returned value
-#  */
+
 def scanner():
-    scanfiles(db, BUF_SIZE)
+    return scandocs(db, BUF_SIZE, SETTINGS['alert'])
 
 def autoprotect():
     if options.protect:
@@ -342,28 +331,31 @@ def shutdown():
 if __name__ == '__main__':
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("-a", "--auto",
-                      action="store_true", dest="protect", default=False,
-                      help="Auto-protect - automatically protect files and monitor")
+    parser.add_option("-s", "--scan",
+                      action="store_true", dest="scan", default=False,
+                      help="Automatically scan docs")
+    parser.add_option("-a", "--alert",
+                      action="store_true", dest="alert", default=False,
+                      help="Send slack alerts")
     (options, args) = parser.parse_args()
     cron.start()
-    if options.protect:
+    if options.scan:
         autoprotect()
         options.protect=False
+    if options.alert:
+        SETTINGS['alert'] = True
+
     context = ('ssl/cert', 'ssl/key')
 
     if client:
         db = client[CONFIG['db_name']]
-        # check if a bot record exists for this host otherwise create one
-        query = Query(db, selector={'type': {'$eq': 'bot'}})
-        # TODO check if bot record already exists
-        data = {'host': socket.getfqdn(),
-                'ipaddress': socket.gethostbyname(socket.gethostname()),
-                'registerdate': '',
-                'lastscandate': '',
-                'type': 'bot',
-                'alive': True,
-                'status': 1}
-        db.create_document(data)
+        with Document(db, 'bot') as bot:
+            bot['host'] = socket.getfqdn()
+            bot['ipaddress'] = socket.gethostbyname(socket.gethostname())
+            bot['registerdate'] = ''
+            bot['lastscandate'] = ''
+            bot['type'] = 'config'
+            bot['alive'] = True
+            bot['status'] = 0 # idle
 
     app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, use_reloader=False, debug=True)

@@ -37,5 +37,4 @@ def check_ldap(user, pw):
             print e
             return -1
     finally:
-        print "Doing unbind."
         l.unbind()

@@ -17,7 +17,7 @@
     <div class="container">
         <h1 class="text-center"><img src="static/face-monkey.png">&nbsp;FIMpy - File Integrity Monitor</h1>
         <div align="center">
-            <button id="submit" type="button" class="form-control" aria-describedby="sizing-addon1" style="width: 250px">Execute</button>
+            <!--<button id="submit" type="button" class="form-control" aria-describedby="sizing-addon1" style="width: 250px">Execute</button>-->
             <p id="response" class="lead text-center"></p>
             <p id="monitoredFiles" class="lead text-center"></p>
 
@@ -40,10 +40,18 @@
                           {% endif %}
                       </td>
                       <td align="center" width="28">
-                          {% if row['status'] == 1 %}
-                            <img src="static/protected-lock-16.png" />
-                          {% elif row['status'] == 2 %}
-                            <img src="static/protected-shield-16.png" />
+                          {% if row['alive'] == true %}
+                              {% if row['status'] == 0 %}
+                                <img src="static/hourglass-16.png" />
+                              {% elif row['status'] == 1 %}
+                                <img src="static/protected-lock-16.png" />
+                              {% elif row['status'] == 2 %}
+                                <img src="static/radioactive-16.png" />
+                              {% else %}
+                                <img src="static/question-mark-16.png" />
+                              {% endif %}
+                          {% else %}
+                              <img src="static/question-mark-16.png" />
                           {% endif %}
                       </td>
                       <!--<td>{{ row['alive']|tojson|safe }}</td>-->
@@ -52,47 +60,6 @@
             </table>
         </div>
     </div>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="static/antixss.js" type="text/javascript"></script>
-
-    <script>
-    	//Submit data when submit button is pressed
-        $('#submit').click(function(e) {
-            //POST a request to write monitored file details to the database
-            $.ajax({
-              method: "POST",
-              url: "./api/fimpy",
-              contentType: "application/json",
-              data: JSON.stringify({name: name })
-            })
-            .done(function(data) {
-                $('#response').html(AntiXSS.sanitizeInput(data));
-                $('#submit').hide();
-                getFiles();
-            });
-        });
-
-        //GET all the files from the database
-        function getFiles(){
-          $.get("./api/fimpy")
-              .done(function(data) {
-                  if(data.length > 0) {
-                    data.forEach(function(element, index) {
-                      data[index] = AntiXSS.sanitizeInput(element)
-                    });
-                    $('#monitoredFiles').html("Monitored files: " + data);
-                  }
-              });
-          }
-
-          //Call getFiles on page load.
-          getFiles();
-
-
-    </script>
 
 </body>
 
