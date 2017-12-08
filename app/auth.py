@@ -1,4 +1,21 @@
 #!/usr/bin/env python
+"""
+FIMpy - A Python File Integrity Monitoring Application
+"""
+
+#########################################################################################
+####################################  AUTH  #############################################
+#########################################################################################
+#                                                                                       #
+#   Python module for authorisation functions using JumpCloud LDAP-as-a-Service         #
+#                                                                                       #
+#########################################################################################
+
+__author__ = "Alan O'Neill"
+__license__ = "GPL"
+__version__ = "1.0"
+__maintainer__ = "Alan O'Neill"
+__status__ = "Development"
 
 import ldap
 from functools import wraps
@@ -23,6 +40,7 @@ def protected(f):
     return decorated
 
 def check_ldap(user, pw):
+# TODO store LDAP org-id in IBM Key-Protect
     dn = "uid=" + user + ",ou=Users,o=59fee5a1d7fed97c192c12ce,dc=jumpcloud,dc=com"
     server = "ldaps://ldap.jumpcloud.com:636"
     try:

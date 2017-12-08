@@ -12,6 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+#########################################################################################
+####################################  AUTH  #############################################
+#########################################################################################
+#                                                                                       #
+#   This sample code was downloaded from IBM Key-Protect's repo on GiHub and adapted    #
+#   in order to obtain a key from the key repository to generate a secure HMAC          #
+#                                                                                       #
+#   Reference: https://github.com/IBM-Bluemix/key-protect-helloworld-python             #
+#                                                                                       #
+#########################################################################################
+
+
 from __future__ import print_function
 import sys
 
@@ -47,14 +60,13 @@ def setup():
 
 
 def getkey():
-
+# My FIMpy key reference id
     key_id = '5f715b2b-1809-4f88-ade7-69845b02ea34'
 
     url, headers = setup()
     key_url = '/'.join([url, key_id])
 
     try:
-        print('\n\nGet Key Secret', file=sys.stderr)
         get_key_request = requests.get(key_url, headers=headers)
 
         get_key_status = get_key_request.status_code

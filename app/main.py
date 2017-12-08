@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """
 FIMpy - A Python File Integrity Monitoring Application
-
 """
 
 __author__ = "Alan O'Neill"
@@ -10,7 +9,9 @@ __version__ = "1.0"
 __maintainer__ = "Alan O'Neill"
 __status__ = "Development"
 
-# local imports
+#######################################################################################
+###############################   LOCAL IMPORTS  ######################################
+#######################################################################################
 from auth import protected
 from func import scandocs
 
@@ -32,9 +33,12 @@ import socket
 import hashlib
 import hmac
 import requests
+import unittest
 from ibmkeyprotect import getkey
 
-#######################################################################
+#######################################################################################
+##################################   GLOBALS  #########################################
+#######################################################################################
 CONFIG = {
 # On Bluemix, get the port number from the environment variable PORT
 # When running this app on the local machine, default the port to 8000
@@ -55,16 +59,17 @@ PATHS = {
 #   'paths': ['/bin', '/usr/bin/python2.7']
     'paths': ['test']
 }
-#######################################################################
 
 # Emit Bluemix deployment event
 cf_deployment_tracker.track()
 
+# Flask App declaration
 app = Flask(__name__)
 
 # BUF_SIZE for reading files
 BUF_SIZE = 65536  # 64k chunks
 
+# Cloudant Handlers
 client = None
 db = None
 
@@ -94,10 +99,106 @@ elif os.path.isfile('vcap-local.json'):
         client = Cloudant(user, password, url=url, connect=True)
         db = client.create_database(CONFIG['db_name'], throw_on_exists=False)
 
+
+#######################################################################################
+################################   UNIT TESTS  ########################################
+#######################################################################################
+class TestCases(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        pass
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
+    def setUp(self):
+        # creates a test client
+        self.app = app.test_client()
+        # propagate the exceptions to the test client
+        self.app.testing = True
+
+    def tearDown(self):
+        pass
+
+    def testRestGetPing(self):
+        # sends HTTP GET request to the application
+        # on the specified path
+        response = self.app.get('/api/v1/ping')
+
+        # assert the status code of the response
+        # should return 200 - OK
+        self.assertEqual(response.status_code, 200)
+
+    def testRest404NotFound(self):
+        # sends HTTP GET request to the application
+        # on the specified path
+        response = self.app.get('/api/v1/dummy', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+
+        # assert the status code of the response
+        # should return 404 - Not Found
+        self.assertEqual(response.status_code, 404)
+
+    def testRestAuthenticationAuthorised(self):
+        # sends HTTP GET request to the application
+        # on the specified path
+        response = self.app.get('/api/v1/docs', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+
+        # assert the status code of the response
+        # should return 200 - Authorized
+        self.assertEqual(response.status_code, 200)
+
+    def testRestResponseJsonValid(self):
+        # sends HTTP GET request to the application
+        # on the specified path
+        response = self.app.get('/api/v1/docs', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+
+        # assert the status code of the response
+        # should return True
+        self.assertTrue(self.validjson(response.data))
+
+    def validjson(self, x):
+      try:
+        doc = json.loads(x)
+      except ValueError, e:
+        return False
+      return True
+
+    def testRestResponseScan(self):
+        # sends HTTP GET request to the application
+        # on the specified path
+        r1 = self.app.get('/api/v1/docs', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+
+        r2 = self.app.post('/api/v1/scan', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+
+        # assert the status code of responses
+        # should return True and True
+        self.assertEqual(r1.status_code, 200) and self.assertEqual(r2.status_code, 200)
+
+    def testRestAuthenticationUnauthorised(self):
+        # sends HTTP GET request to the application
+        # on the specified path
+        response = self.app.get('/api/v1/docs')
+
+        # assert the status code of the response
+        # should return 401 - Unauthorized
+        self.assertEqual(response.status_code, 401)
 #######################################################################################
 #######################################################################################
 #######################################################################################
 
+
+#######################################################################################
+#############################   REST END-POINTS  ######################################
+#######################################################################################
+
+# /*
+#  * Endpoint for index.html
+#  * Send a GET request to localhost:5000
+#  * Response:
+#  * @return A rjinja2 based html template and content to populate the FIMpy dashboard
+#  */
 @app.route('/')
 @protected
 def home():
@@ -133,7 +234,7 @@ def home():
 
 # /*
 #  * Endpoint for an app instance heat-beat
-#  * Send a GET request to localhost:8000/api/fimpy/ping
+#  * Send a GET request to localhost:5000/api/fimpy/ping
 #  * Response:
 #  * @return A response to indicate the app instance is running
 #  */
@@ -312,15 +413,23 @@ def scan():
         print('No database')
         return "", 500
 
-
+#  /* Wrapper function for doc scanning that can be called via REST and scheduled job
+#  * @return An json string with scan details
+#  */
 def scanner():
     return scandocs(db, BUF_SIZE, SETTINGS['alert'])
 
+#  /* Function to create scheduled job at set interval for baseline scanning
+#  * @return n/a
+#  */
 def autoprotect():
+    cron.start()
     if options.protect:
         cron.add_job(scanner, 'interval', minutes=SETTINGS['scanner_interval'])
 
-
+#  /* Function to handle graceful shutdown
+#  * @return n/a
+#  */
 @atexit.register
 def shutdown():
     if client:
@@ -328,25 +437,46 @@ def shutdown():
         if cron:
             cron.shutdown(wait=False)
 
+
+
+#########################################################################################
+###################################   MAIN  #############################################
+#########################################################################################
+#                                                                                       #
+#   The main python function that sets up commandline options, enables auto-protect     #
+#   and alerts, registers new clients by creating db and config, configures SSL and     #
+#   runs the test-suite. App will only start if sucessfully passing all test-cases.     #
+#                                                                                       #
+#########################################################################################
 if __name__ == '__main__':
+
+# Setup command-line options using optparse
     from optparse import OptionParser
     parser = OptionParser()
+
+# option to enable auto generate base-line and start scanning
     parser.add_option("-s", "--scan",
                       action="store_true", dest="scan", default=False,
                       help="Automatically scan docs")
+
+# option to send ush notifications to slack
     parser.add_option("-a", "--alert",
                       action="store_true", dest="alert", default=False,
                       help="Send slack alerts")
+
+# setup based on passed command-line options
     (options, args) = parser.parse_args()
-    cron.start()
     if options.scan:
         autoprotect()
         options.protect=False
     if options.alert:
         SETTINGS['alert'] = True
 
+# local SSL rsa key and cert
+# TODO: move this to IBM Key-Protect
     context = ('ssl/cert', 'ssl/key')
 
+# if db handler is set, register client and generate config (if not already registered)
     if client:
         db = client[CONFIG['db_name']]
         with Document(db, 'bot') as bot:
@@ -358,4 +488,9 @@ if __name__ == '__main__':
             bot['alive'] = True
             bot['status'] = 0 # idle
 
+# run test suite
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestCases)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+
+# invoke Flask app on designated port and run options
     app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, use_reloader=False, debug=True)

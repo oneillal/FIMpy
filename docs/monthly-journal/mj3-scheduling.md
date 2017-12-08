@@ -1,6 +1,6 @@
 # Python Scheduling
 
-Need to automate scnas using background task scheduling
+Need to automate scans using background task scheduling
 Tricky with a web frame work
 AppScheduler
 Spawning multiple jobs...couldn't figure out why
