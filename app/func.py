@@ -10,6 +10,7 @@ FIMpy - A Python File Integrity Monitoring Application
 #   Python module for functions to make more modular and maintainable                   #
 #                                                                                       #
 #########################################################################################
+from datetime import datetime
 
 __author__ = "Alan O'Neill"
 __license__ = "GPL"
@@ -19,6 +20,7 @@ __status__ = "Development"
 
 import hashlib
 import hmac
+from time import time
 from os import path
 
 from cloudant.query import Query
@@ -26,16 +28,21 @@ from cloudant.document import Document
 from alert import alert_slack
 from ibmkeyprotect import getkey
 
-#  /* Function to scan protected docs against secure baseline stored in the db
-#  * @return A JSON string  withe results of the baseline scan
+#  /* Function to verify against secure baseline stored in the db
+#  * @return A JSON string  withe results of the baseline verification
 #  */
-def scandocs(db, BUF_SIZE, alert):
+def scanbaseline(db, BUF_SIZE, alert):
+
+    with Document(db, 'bot') as bot:
+        if bot['status'] == 3:
+            return {}
+
     # retrieve docs of type doc
     items = []
-    query = Query(db, selector={'type': {'$eq': 'doc'}, 'status': {'$eq': 1}}) # skip files reporting compromised state
+    query = Query(db, selector={'type': {'$eq': 'doc'}}) # skip files reporting compromised state
 # TODO handle already report compromised files
 
-    print "scanning base-line..."
+    print "Verifying base-line..."
 
     status = 1
     for document in query.result:
@@ -59,7 +66,7 @@ def scandocs(db, BUF_SIZE, alert):
             finally:
                 f.close()
 
-            print(document['file'])
+            print(document['_id'])
             print('hash db> ' + document['hash'])
             print('hash fs> ' + sha256.hexdigest())
             print('hmac db> ' + document['hmac'])
@@ -74,18 +81,25 @@ def scandocs(db, BUF_SIZE, alert):
 # Check if base-line and latest HMAC are equal
 # TODO as this is the key to everything, investigate further potential vulnerabilities and secure
             if digest.hexdigest() == document['hmac']:
-                data['status'] = 1 # safe
-            else:
-                data['status'] = 2 # compromised
+                data['status'] = 2 # match
                 status = 2
+                with Document(db, document['_id']) as doc:
+                    doc['status'] = status
+            else:
+                data['status'] = 3 # compromised
+                status = 3
+                with Document(db, document['_id']) as doc:
+                    doc['status'] = status
 # If push notification alerts are enabled, send a alert
                 if alert:
                     alert_slack(document['_id'], document['host'], document['ipaddress'])
+                break
 
             items.append(data)
 
-# Update the bot doc in the db with the latest baseline scan status
-        with Document(db, 'bot') as bot:
-            bot['status'] = status
+# Update the bot doc in the db with the latest baseline status
+    with Document(db, 'bot') as bot:
+        bot['status'] = status
+        bot['lastscandate'] = datetime.fromtimestamp(time()).strftime('%d-%b-%Y %H:%M:%S')
 
     return items

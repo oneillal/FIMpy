@@ -15,48 +15,62 @@
 
 <body>
     <div class="container">
-        <h1 class="text-center"><img src="static/face-monkey.png">&nbsp;FIMpy - File Integrity Monitor</h1>
+        <h1 class="text-center"><img src="static/img/face-monkey.png">&nbsp;FIMpy - File Integrity Monitor</h1>
         <div align="center">
-            <!--<button id="submit" type="button" class="form-control" aria-describedby="sizing-addon1" style="width: 250px">Execute</button>-->
-            <p id="response" class="lead text-center"></p>
-            <p id="monitoredFiles" class="lead text-center"></p>
 
             <table id="clients">
                 <tr>
                     <th>Host</th>
                     <th>IP Address</th>
-                    <th>Alive</th>
-                    <th>Status</th>
+                    <th style="text-align: center">Type</th>
+                    <th>Last Scan</th>
+                    <th style="text-align: center">Status</th>
                 </tr>
                 {% for row in x %}
                     <tr>
-                      <td><img src="static/blue-diamond-16.png" />&nbsp;{{ row['hosts'] }}</td>
-                      <td>{{ row['ipaddresses'] }}</td>
-                      <td align="center" width="28">
+                      <td align="left">
                           {% if row['alive'] == true %}
-                            <img src="static/green-circle-16.png" />
+                            <img src="static/img/green-circle-16.png" />
                           {% else %}
-                            <img src="static/red-circle-16.png" />
+                            <img src="static/img/red-circle-16.png" />
                           {% endif %}
-                      </td>
-                      <td align="center" width="28">
+                      {{ row['hosts'] }}</td>
+                      <td>{{ row['ipaddresses'] }}</td>
+                      <td align="center" width="120">HMAC</td>
+                      <td align="left" width="170">{{ row['lastscandates'] }}</td>
+                      <td align="center" width="120">
                           {% if row['alive'] == true %}
-                              {% if row['status'] == 0 %}
-                                <img src="static/hourglass-16.png" />
-                              {% elif row['status'] == 1 %}
-                                <img src="static/protected-lock-16.png" />
-                              {% elif row['status'] == 2 %}
-                                <img src="static/radioactive-16.png" />
+                              {% if row['status'] == 0 %} <!-- Idle -->
+                                <img src="static/img/snowflake-16.png" />
                               {% else %}
-                                <img src="static/question-mark-16.png" />
+                                  {% if row['status'] == 1 %} <!-- Baseline Set -->
+                                    <img src="static/img/protected-key-16.png" />
+                                  {% endif %}
+                                  {% if row['status'] == 2 %} <!-- Verified -->
+                                    <img src="static/img/protected-shield-16.png" />
+                                    <img src="static/img/bell-16.png" />
+                                  {% endif %}
+                                  {% if row['status'] == 3 %} <!-- Compromised -->
+                                    <img src="static/img/radioactive-16.png" />
+                                  {% endif %}
                               {% endif %}
                           {% else %}
-                              <img src="static/question-mark-16.png" />
+                              <img src="static/img/question-mark-16.png" />
                           {% endif %}
                       </td>
                       <!--<td>{{ row['alive']|tojson|safe }}</td>-->
                     </tr>
                 {% endfor %}
+                    <tr><td colspan="5" class="legend"><br><b>Key:</b>&nbsp;&nbsp;
+                        <img src="static/img/green-circle-16.png" />&nbsp;Host Alive&nbsp;&nbsp;
+                        <img src="static/img/red-circle-16.png" />&nbsp;Host Uncontactable&nbsp;&nbsp;
+                        <img src="static/img/snowflake-16.png" />&nbsp;No Baseline&nbsp;&nbsp;
+                        <img src="static/img/protected-key-16.png" />&nbsp;Baseline Set&nbsp;&nbsp;
+                        <img src="static/img/protected-shield-16.png" />&nbsp;Baseline Verified&nbsp;&nbsp;
+                        <img src="static/img/radioactive-16.png" />&nbsp;Baseline Integrity Check Failed&nbsp;&nbsp;
+                        <img src="static/img/bell-16.png" />&nbsp;Alerts Enabled&nbsp;&nbsp;
+                        <img src="static/img/question-mark-16.png" />Status Unknown&nbsp;&nbsp;
+                    </td></tr>
             </table>
         </div>
     </div>
