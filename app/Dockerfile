@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=0
 ENV TZ=Europe/Dublin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 EXPOSE 5000
-ENV SLACKTOKEN=
+ENV SLACKTOKEN=xoxp-263593032944-263593033264-276857887971-9e6816582c04cae19fb0f6f6f6287e21
 #ENTRYPOINT ["python"]
 #CMD ["main.py"]
-CMD ["python","-u","main.py"]
+CMD ["python","-u","main.py","--alert","--auto"]

@@ -3,6 +3,44 @@
 FIMpy - A Python File Integrity Monitoring Application
 """
 
+#########################################################################################
+####################################  REFERENCES  #######################################
+#########################################################################################
+#
+#   The following references are all being cited for code used in this application:
+#
+#   Bluemix Python Sample:  https://github.com/IBM-Bluemix/get-started-python
+#   HMAC calculation:       https://pymotw.com/2/hmac/
+#   Cloudant Code:          https://console.bluemix.net/docs/services/Cloudant/getting-started.html
+#   HTTP Request Client:    http://docs.python-requests.org/en/master/user/quickstart
+#   Python SSL:             http://bobthegnome.blogspot.co.uk/2007/08/making-ssl-connection-in-python.html http://flask.pocoo.org/snippets/111/
+#   Python LDAP:            https://www.packtpub.com/books/content/python-ldap-applications-part-1-installing-and-configuring-python-ldap-library-and-bin
+#   Python BasicAuth:       http://flask.pocoo.org/snippets/8/
+#   Python Task Scheduling: https://apscheduler.readthedocs.io/en/latest/userguide.html
+#                           https://stackoverflow.com/questions/21214270/scheduling-a-function-to-run-every-hour-on-flask
+#   Command-Line Options:   https://docs.python.org/2/library/optparse.html
+#   Python Slack Client:    https://github.com/os/slacker
+#   KeyProtect Examples:    https://github.com/IBM-Bluemix/key-protect-helloworld-python
+#   Jinja Template Example: http://jinja.pocoo.org/docs/2.10/templates/#builtin-filters
+#   FIMpy Logo:             https://www.easyicon.net/language.en/541685-face_monkey_icon.html (Free for commerical use)
+#
+#
+#   The following Python modules and libraries are used:
+#
+#   flask                   https://pypi.python.org/pypi/Flask/0.12.2
+#   cloudant                https://pypi.python.org/pypi/cloudant/
+#   hashlib                 https://pypi.python.org/pypi/hashlib/20081119
+#   hmac                    https://pypi.python.org/pypi/hmac/20101005
+#   requests                https://pypi.python.org/pypi/requests/2.18.4
+#   optparse                https://pypi.python.org/pypi/optparse2/0.1
+#   apscheduler             https://pypi.python.org/pypi/APScheduler
+#   slacker                 https://pypi.python.org/pypi/slacker/0.9.60
+#   unittest                https://pypi.python.org/pypi/unittest2/1.1.0
+#   python-ldap             https://pypi.python.org/pypi/python-ldap/3.0.0b2
+#   pyopenssl               https://pypi.python.org/pypi/pyOpenSSL/17.5.0
+#
+#########################################################################################
+
 __author__ = "Alan O'Neill"
 __license__ = "GPL"
 __version__ = "1.0"
@@ -13,30 +51,35 @@ __status__ = "Development"
 ###############################   LOCAL IMPORTS  ######################################
 #######################################################################################
 from auth import protected
-from func import scanbaseline
+from verify import scanbaseline
+from ibmkeyprotect import getkey
 
-from time import time
+#######################################################################################
+###############################   MODULE IMPORTS  #####################################
+#######################################################################################
 
 from cloudant.client import Cloudant
 from cloudant.query import Query
 from cloudant.document import Document
 
 from flask import Flask, render_template, request, abort
-
 from apscheduler.schedulers.background import BackgroundScheduler
+import requests
+import hashlib
+import hmac
+import unittest
 
-import atexit
+# Library used in Bluemix deployments
 import cf_deployment_tracker
+
+# Core Python modules
+import atexit
 import json
 import os
 import sys
 import glob
 import socket
-import hashlib
-import hmac
-import requests
-import unittest
-from ibmkeyprotect import getkey
+from time import time
 
 #######################################################################################
 ##################################   GLOBALS  #########################################
@@ -46,9 +89,7 @@ CONFIG = {
 # When running this app on the local machine, default the port to 8000
     'port': int(os.getenv('PORT', 5000)),
     'host': 'localhost',
-    'db_name': socket.getfqdn(),
-    'user': 'user',
-    'password': 'password'
+    'db_name': socket.getfqdn()
 }
 
 SETTINGS = {
@@ -59,7 +100,7 @@ SETTINGS = {
 PATHS = {
 # Array of paths to be monitored e.g. 'paths': ['/path1', '/path2/path3']
 #   'paths': ['/bin', '/usr/bin/python2.7']
-    'paths': ['test']
+    'paths': ['/app/test']
 }
 
 # Emit Bluemix deployment event
@@ -134,7 +175,7 @@ class TestCases(unittest.TestCase):
     def testRest404NotFound(self):
         # sends HTTP GET request to the application
         # on the specified path
-        response = self.app.get('/api/v1/dummy', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+        response = self.app.get('/api/v1/dummy')
 
         # assert the status code of the response
         # should return 404 - Not Found
@@ -143,7 +184,7 @@ class TestCases(unittest.TestCase):
     def testRestAuthenticationUnauthorised(self):
         # sends HTTP GET request to the application
         # on the specified path
-        response = self.app.get('/api/v1/baseline')
+        response = self.app.get('/api/v1/config')
 
         # assert the status code of the response
         # should return 401 - Unauthorized
@@ -152,7 +193,7 @@ class TestCases(unittest.TestCase):
     def testRestAuthenticationAuthorised(self):
         # sends HTTP GET request to the application
         # on the specified path
-        response = self.app.get('/api/v1/baseline', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+        response = self.app.get('/api/v1/config', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
 
         # assert the status code of the response
         # should return 200 - Authorized
@@ -164,37 +205,33 @@ class TestCases(unittest.TestCase):
     def testBluemixKeyProtectConnect(self):
         self.assertTrue(True)
 
-    def testRestResponseJsonValidation(self):
-        # sends HTTP GET request to the application
-        # on the specified path
-        response = self.app.get('/api/v1/baseline', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+    # def testRestResponseJsonValidation(self):
+    #     # sends HTTP GET request to the application
+    #     # on the specified path
+    #     response = self.app.get('/api/v1/baseline', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+    #
+    #     # assert the status code of the response
+    #     # should return True
+    #     self.assertTrue(self.validjson(response.data))
+    #
+    # def validjson(self, x):
+    #   try:
+    #     doc = json.loads(x)
+    #   except ValueError, e:
+    #     return False
+    #   return True
+    #
+    # def testRestResponseVerify(self):
+    #     # sends HTTP GET request to the application
+    #     # on the specified path
+    #     r1 = self.app.get('/api/v1/baseline', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+    #
+    #     r2 = self.app.post('/api/v1/verify', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
+    #
+    #     # assert the status code of responses
+    #     # should return True and True
+    #     self.assertEqual(r1.status_code, 200) and self.assertEqual(r2.status_code, 200)
 
-        # assert the status code of the response
-        # should return True
-        self.assertTrue(self.validjson(response.data))
-
-    def validjson(self, x):
-      try:
-        doc = json.loads(x)
-      except ValueError, e:
-        return False
-      return True
-
-    def testRestResponseVerify(self):
-        # sends HTTP GET request to the application
-        # on the specified path
-        r1 = self.app.get('/api/v1/baseline', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
-
-        r2 = self.app.post('/api/v1/verify', headers={'Authorization': 'Basic YWRtaW46cGFzc3dvcmQ='})
-
-        # assert the status code of responses
-        # should return True and True
-        self.assertEqual(r1.status_code, 200) and self.assertEqual(r2.status_code, 200)
-
-
-#######################################################################################
-#######################################################################################
-#######################################################################################
 
 
 #######################################################################################
@@ -213,21 +250,21 @@ def home():
     if client:
         alive = []; hosts = []; ipaddresses = []; status = []; lastscandates = [];
         for db in client.all_dbs():
-            # retrieve the bot record for each db
-            with Document(client[db], 'bot') as bot:
-                if bot['status'] == 3: # compromised
+            # retrieve the host record for each db
+            with Document(client[db], 'host') as host:
+                if host['status'] == 3: # compromised
                     next # skip hosts that are reporting compromised state
-                hosts.append(bot['host'])
-                ipaddresses.append(bot['ipaddress'])
-                status.append(bot['status'])
-                if 'lastscandate' in bot:
-                    lastscandates.append(bot['lastscandate'])
+                hosts.append(host['host'])
+                ipaddresses.append(host['ipaddress'])
+                status.append(host['status'])
+                if 'lastscandate' in host:
+                    lastscandates.append(host['lastscandate'])
                 else:
                     lastscandates.append('-')
-                if (bot['host'] == CONFIG['db_name']): # no need to ping this instance
+                if (host['host'] == CONFIG['db_name']): # no need to ping this instance
                     alive.append(True)
                 else:
-                    ping = 'https://' + bot['ipaddress'] + ':' + str(CONFIG['port']) + '/api/v1/ping'
+                    ping = 'https://' + host['ipaddress'] + ':' + str(CONFIG['port']) + '/api/v1/ping'
                     try:
                         # using self signed certs so turning off cert verification.
                         # TODO switch to IBM CA certs, setup trust store and enable cert verification
@@ -407,8 +444,8 @@ def restpostbaseline():
                         file['type'] = data['type']
                         file['status'] = data['status']
 
-    with Document(db, 'bot') as bot:
-        bot['status'] = 1 # protecting
+    with Document(db, 'host') as host:
+        host['status'] = 1 # protecting
 
     root = {"docs": docs}
 
@@ -443,7 +480,7 @@ def verify():
 #  /* Function to create scheduled job at set interval for baseline scanning
 #  * @return n/a
 #  */
-def autoprotect():
+def automonitor():
     cron.start()
     if options.auto:
         cron.add_job(verify, 'interval', minutes=SETTINGS['scanner_interval'])
@@ -476,9 +513,9 @@ if __name__ == '__main__':
     parser = OptionParser()
 
 # option to enable auto generate base-line and start scanning
-    parser.add_option("-s", "--auto-protect",
+    parser.add_option("-s", "--auto",
                       action="store_true", dest="auto", default=False,
-                      help="Automatically scan docs")
+                      help="Automatically monitor baseline")
 
 # option to send ush notifications to slack
     parser.add_option("-a", "--alert",
@@ -488,7 +525,7 @@ if __name__ == '__main__':
 # setup based on passed command-line options
     (options, args) = parser.parse_args()
     if options.auto:
-        autoprotect()
+        automonitor()
         options.auto=False
     if options.alert:
         SETTINGS['alert'] = True
@@ -500,17 +537,16 @@ if __name__ == '__main__':
 # if db handler is set, register client and generate config (if not already registered)
     if client:
         db = client[CONFIG['db_name']]
-        with Document(db, 'bot') as bot:
-            bot['host'] = socket.getfqdn()
-            bot['ipaddress'] = socket.gethostbyname(socket.gethostname())
-            bot['registerdate'] = time()
-            bot['type'] = 'config'
-            bot['alive'] = True
-            bot['status'] = 0 # idle
+        with Document(db, 'host') as host:
+            host['host'] = socket.getfqdn()
+            host['ipaddress'] = socket.gethostbyname(socket.gethostname())
+            host['registerdate'] = time()
+            host['type'] = 'config'
+            host['status'] = 0 # idle
 
 # run test suite
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCases)
-    #unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.TextTestRunner(verbosity=2).run(suite)
 
 # invoke Flask app on designated port and run options
     app.run(host='0.0.0.0', port=CONFIG['port'], ssl_context=context, threaded=True, use_reloader=False, debug=True)

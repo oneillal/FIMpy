@@ -1,8 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Inconsolata");
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 
-@import url("fa/css/font-awesome.min.css");
-
 h1 { font-family: "Inconsolata", "Trebuchet MS", Arial, Helvetica, sans-serif; }
 
 .legend {

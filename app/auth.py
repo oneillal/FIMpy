@@ -9,6 +9,12 @@ FIMpy - A Python File Integrity Monitoring Application
 #                                                                                       #
 #   Python module for authorisation functions using JumpCloud LDAP-as-a-Service         #
 #                                                                                       #
+#   Code adapted from examples from the following sources:                              #
+#                                                                                       #
+#   http://flask.pocoo.org/snippets/8/                                                  #
+#   https://www.packtpub.com/books/content/python-ldap-applications-part-1-installing-  #
+#               and-configuring-python-ldap-library-and-bin                             #
+#                                                                                       #
 #########################################################################################
 
 __author__ = "Alan O'Neill"

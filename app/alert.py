@@ -10,6 +10,9 @@ FIMpy - A Python File Integrity Monitoring Application
 #   Python module for alert functions. MVP only contains logging and push notifications #
 #   via Slack                                                                           #
 #                                                                                       #
+#   Code below uses slacker module sourced from https://github.com/os/slacker           #
+#   and adapts example code found at the same reference                                 #
+#                                                                                       #
 #########################################################################################
 
 __author__ = "Alan O'Neill"

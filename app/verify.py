@@ -4,10 +4,13 @@ FIMpy - A Python File Integrity Monitoring Application
 """
 
 #########################################################################################
-###################################  FUNC  ##############################################
+###################################  VERIFY  ############################################
 #########################################################################################
 #                                                                                       #
-#   Python module for functions to make more modular and maintainable                   #
+#   Python module for verifying baseline by recalculating the HMAC and comparing to     #
+#   to the code stored in the database.                                                 #
+#                                                                                       #
+#   The code below was adapted from examples found at https://pymotw.com/2/hmac/        #
 #                                                                                       #
 #########################################################################################
 from datetime import datetime
@@ -33,18 +36,18 @@ from ibmkeyprotect import getkey
 #  */
 def scanbaseline(db, BUF_SIZE, alert):
 
-    with Document(db, 'bot') as bot:
-        if bot['status'] == 3:
+    with Document(db, 'host') as host:
+        # if no baseline set or host already in compromised state
+        if host['status'] == 0 or host['status'] == 3:
             return {}
 
     # retrieve docs of type doc
     items = []
-    query = Query(db, selector={'type': {'$eq': 'doc'}}) # skip files reporting compromised state
+    query = Query(db, selector={'type': {'$eq': 'doc'}})
 # TODO handle already report compromised files
 
     print "Verifying base-line..."
 
-    status = 1
     for document in query.result:
         sha256 = hashlib.sha256()
 # Generate the HMAC using the secure key stored in IBM Key-Protect
@@ -97,9 +100,9 @@ def scanbaseline(db, BUF_SIZE, alert):
 
             items.append(data)
 
-# Update the bot doc in the db with the latest baseline status
-    with Document(db, 'bot') as bot:
-        bot['status'] = status
-        bot['lastscandate'] = datetime.fromtimestamp(time()).strftime('%d-%b-%Y %H:%M:%S')
+# Update the host doc in the db with the latest baseline status
+    with Document(db, 'host') as host:
+        host['status'] = status
+        host['lastscandate'] = datetime.fromtimestamp(time()).strftime('%d-%b-%Y %H:%M:%S')
 
     return items
