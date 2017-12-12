@@ -3,16 +3,13 @@
 * [FIMpy - File Integrity Monitor](README.md)
 
 * [User Documentation]()
-  * [TODO]()
+  * [How to test FIMpy](user-docs/how-to-test-fimpy.md)
 
-* [Project Report]()
-  * [TODO]()
-
-* [Monthly Journal 1](monthly-journal/mj1.md)
+* [Development Journal 1](monthly-journal/mj1.md)
   * [The Idea](monthly-journal/mj1-the-idea.md)
   * [Real World Evidence](monthly-journal/mj1-rwe.md)
   * [Design & Requirements](monthly-journal/mj1-design-requirements.md)
-* [Monthly Journal 2](monthly-journal/mj2.md)
+* [Development Journal 2](monthly-journal/mj2.md)
   * [Python](monthly-journal/mj2-python.md)
   * [HMAC](monthly-journal/mj2-hmac.md)
   * [Authentication Using LDAP](monthly-journal/mj2-authentication.md)
@@ -24,7 +21,7 @@
       * [POST /api/fimpy - Write monitored file info to db](monthly-journal/mj2-early-testing.md#post-apifimpy---write-monitored-file-info-to-db)
       * [GET /api/fimpy - Read monitored file info from db](monthly-journal/mj2-early-testing.md#get-apifimpy---read-monitored-file-info-from-db)
       * [LDAP Authenication Failure](monthly-journal/mj2-early-testing.md#ldap-authenication-failure)
-* [Monthly Journal 3](monthly-journal/mj3.md)
+* [Development Journal 3](monthly-journal/mj3.md)
     * [Python Job Scheduling](monthly-journal/mj3-scheduling.md)
     * [Twilight-Zone](monthly-journal/mj3-time-zone.md)
     * [Time for Some UI](monthly-journal/mj3-time-for-some-ui.md)

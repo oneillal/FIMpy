@@ -100,7 +100,7 @@ SETTINGS = {
 PATHS = {
 # Array of paths to be monitored e.g. 'paths': ['/path1', '/path2/path3']
 #   'paths': ['/bin', '/usr/bin/python2.7']
-    'paths': ['/app/test']
+    'paths': ['test']
 }
 
 # Emit Bluemix deployment event
@@ -204,6 +204,8 @@ class TestCases(unittest.TestCase):
 
     def testBluemixKeyProtectConnect(self):
         self.assertTrue(True)
+
+# Commenting out the following Test Cases for demo
 
     # def testRestResponseJsonValidation(self):
     #     # sends HTTP GET request to the application
