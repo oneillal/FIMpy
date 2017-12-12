@@ -28,7 +28,7 @@ from os import path
 
 from cloudant.query import Query
 from cloudant.document import Document
-from alert import alert_slack
+from alert import alert_hmac
 from ibmkeyprotect import getkey
 
 #  /* Function to verify against secure baseline stored in the db
@@ -95,7 +95,7 @@ def scanbaseline(db, BUF_SIZE, alert):
                     doc['status'] = status
 # If push notification alerts are enabled, send a alert
                 if alert:
-                    alert_slack(document['_id'], document['host'], document['ipaddress'])
+                    alert_hmac(document['_id'], document['host'], document['ipaddress'])
                 break
 
             items.append(data)

@@ -51,6 +51,7 @@ __status__ = "Development"
 ###############################   LOCAL IMPORTS  ######################################
 #######################################################################################
 from auth import protected
+from alert import alert_host
 from verify import scanbaseline
 from ibmkeyprotect import getkey
 
@@ -275,8 +276,10 @@ def home():
                             alive.append(True)
                         else:
                             alive.append(False)
+                            alert_hmac(host['host'], host['ipaddress'])
                     except requests.ConnectionError:
                         alive.append(False)
+                        alert_host(host['host'], host['ipaddress'])
                         print "Exception occurred:", sys.exc_info()[0]
 
         results = {"hosts": hosts, "alive": alive, "ipaddresses": ipaddresses, "status": status, "lastscandates": lastscandates}
